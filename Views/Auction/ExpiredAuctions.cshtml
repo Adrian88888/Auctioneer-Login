@@ -1,0 +1,63 @@
+﻿@model Auctioneer.ViewModels.AuctionsViewModel
+@{
+    ViewData["Title"] = "Expired Auctions";
+
+}
+<script>
+    function startCountdown(timeLeft, spanId) {
+        var interval = setInterval(countdown, 1000);
+        update();
+
+        function countdown() {
+            if (--timeLeft > 0) {
+                update();
+            }
+        }
+
+        function update() {
+            days = Math.floor(timeLeft / 86400);
+            hours = Math.floor((timeLeft % 86400) / 3600);
+            minutes = Math.floor((timeLeft % 3600) / 60);
+            seconds = timeLeft % 60;
+            document.getElementById(spanId).innerHTML = '' + days + 'D ' + hours + 'H ' + minutes + 'M ' + seconds.toFixed(0) + 'S ';
+        }
+    }
+    </script>
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-md-6">
+            <h2 class="text-white"> Expired Auctions </h2>
+        </div>
+
+        <div class="col-md-6">
+            <a asp-action="Index" class="btn btn-success float-right "> Back to Live Auctions </a>
+        </div>
+    </div>
+    <br /><br />
+        <div class="row">
+            @foreach (var obj in Model.Auctions)
+
+            {
+                TimeSpan timeRemaining = new TimeSpan(obj.ExpiryDate.Ticks - DateTime.Now.Ticks);
+                @if (timeRemaining.TotalSeconds < 0)
+                {
+                    <div class="card bg-dark text-white" style="width:300px">
+                        <img class="card-img-bottom" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true" width="250px" height="200px" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">@obj.Brand @obj.Type </h5>
+                            <p class="card-text">Starting bid: @obj.Min_bid </p>
+                            <p class="card-text text-success">Winning bid: @obj.Max_bid </p>
+                            <p class="card-text text-danger">Expires on: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
+                            <p class="card-text text-danger font-weight-bolder">
+                                Auction has ended.
+                            </p>
+
+
+
+                            <a asp-controller="Auction" asp-route-Id="@obj.AuctionID" asp-action="Display" stretched-link"></a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>

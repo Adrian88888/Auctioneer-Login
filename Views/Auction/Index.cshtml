@@ -1,0 +1,88 @@
+﻿@model Auctioneer.ViewModels.AuctionsViewModel
+@{
+    ViewData["Title"] = "Live Auctions";
+
+}
+<script>
+    function startCountdown(timeLeft, spanId) {
+        var interval = setInterval(countdown, 1000);
+        update();
+
+        function countdown() {
+            if (--timeLeft > 0) {
+                update();
+            } 
+        }
+
+        function update() {
+            days = Math.floor(timeLeft / 86400);
+            hours = Math.floor((timeLeft % 86400) / 3600);
+            minutes = Math.floor((timeLeft % 3600) / 60);
+            seconds = timeLeft % 60;
+            document.getElementById(spanId).innerHTML = '' + days + 'D ' + hours + 'H ' + minutes + 'M ' + seconds.toFixed(0) + 'S ';
+        }
+    }
+</script>
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-white">Live Auctions</h2>
+        </div>
+        <div class="col-6">
+            <a asp-action="ExpiredAuctions" class="btn btn-primary float-right"> See expired auctions </a>
+        </div>
+    </div>
+    <br /><br />
+
+    @if (Model.Auctions.Count() > 0)
+    {
+        <div class="container mt-5 mb-5">
+<div class="d-flex justify-content-center row">
+    <div class="col-md-10">
+        @foreach (var obj in Model.Auctions)
+
+                    {
+                        TimeSpan timeRemaining = new TimeSpan(obj.ExpiryDate.Ticks - DateTime.Now.Ticks);
+        @if (timeRemaining.TotalSeconds > 0)
+                        {
+        <div class="row p-2 bg-white border rounded">
+            <div class="col-md-3 mt-1"><img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true"></div>
+            <div class="col-md-6 mt-1">
+                <h5>@obj.Brand @obj.Type</h5>
+                <p class="text-justify text-truncate para mb-0">@obj.Title</p>
+             
+                <div>
+                    <p class="text-danger">Expiry Date: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
+                    <p class="text-justify text-success font-weight-bold">
+                        Time remaining: <span id="@("time-left" + obj.AuctionID)"></span>
+                        <script>
+                                startCountdown(@timeRemaining.TotalSeconds, '@("time-left" + obj.AuctionID)');
+                        </script>
+                </div>
+            </div>
+            <div class="align-items-center align-content-center col-md-3 border-left mt-1">
+                <div class="d-flex flex-row align-items-center">
+                    <h4 class="mr-1">$@obj.Min_bid</h4><span class="strike-text text-success">$@obj.Max_bid</span>
+                </div>
+                <h6 class="text">Current bid</h6>
+                <div class="d-flex flex-column mt-4">
+                    <a class="btn btn-primary btn-sm" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
+                    <a class="btn btn-outline-primary btn-sm mt-2">Place bid</a>
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+}
+    </div>
+</div>
+</div>
+    }
+    else
+    {
+        <p>There are no active auctions at the moment.</p>
+    }
+
+</div>
+
+
