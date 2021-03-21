@@ -86,6 +86,7 @@ namespace Auctioneer.Controllers
                 auctionViewModel.Min_bid = auction.Min_bid;
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
+                auctionViewModel.Title = auction.Title;
                 model.Auctions.Add(auctionViewModel);
             }
             return View(model);

@@ -67,7 +67,7 @@
                 <h6 class="text">Current bid</h6>
                 <div class="d-flex flex-column mt-4">
                     <a class="btn btn-primary btn-sm" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
-                    <a class="btn btn-outline-primary btn-sm mt-2">Place bid</a>
+                    <a class="btn btn-outline-primary btn-sm mt-2" asp-controller="Bids" asp-action="Index">Place bid</a>
                 </div>
             </div>
         </div>
