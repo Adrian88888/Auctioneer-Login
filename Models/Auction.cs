@@ -37,7 +37,6 @@ namespace Auctioneer.Models
         public virtual CarBrand CarBrand { get; set; }
         public int CarTypeID { get; set; }
         public virtual CarType CarType { get; set; }
-        public int GalleryID { get; set; }
         public virtual List<Gallery> Gallery { get; set; }
     }
 

@@ -26,14 +26,17 @@ namespace Auctioneer.ViewModels
 
         [DisplayName("Starting Bid")]
         [Required(ErrorMessage = "Starting bid is required")]
-        public int Min_bid { get; set; }
+        public int? Min_bid { get; set; }
         [DisplayName("Winning Bid")]
         [Required(ErrorMessage = "Winning bid is required")]
-        public int Max_bid { get; set; }
+        public int? Max_bid { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpiryDate
         {
-            get { return CreationDate.AddDays(Duration); }
+            get
+            {
+                return CreationDate.AddDays((double)Duration);
+            }
         }
 
         public string ImageName { get; set; }
@@ -42,15 +45,13 @@ namespace Auctioneer.ViewModels
         public List<IFormFile> ImageFiles { get; set; }
         [DisplayName("Car Brand")]
         [Required(ErrorMessage = "Car brand is required")]
-        public int CarBrandID { get; set; }
-        [Required(ErrorMessage = "Book name is required")]
+        public int? CarBrandID { get; set; }
         public string Brand { get; set; }
 
         public List<CarBrandViewModel> Brands { get; set; }
         [DisplayName("Car Model")]
         [Required(ErrorMessage = "Car model is required")]
-        public int CarTypeID { get; set; }
-        [Required(ErrorMessage = "Book name is required")]
+        public int? CarTypeID { get; set; }
         public string Type { get; set; }
         public List<CarTypeViewModel> Types { get; set; }
         public Gallery Image { get; set; }

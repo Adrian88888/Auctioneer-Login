@@ -149,13 +149,13 @@ namespace Auctioneer.Controllers
                 }
                 //insert the record to database
                 
-                auction.Duration = obj.Duration;
+                auction.Duration = (int)obj.Duration;
                 auction.Title = obj.Title;
                 auction.Description = obj.Description;
-                auction.Min_bid = obj.Min_bid;
-                auction.Max_bid = obj.Max_bid;
-                auction.CarBrandID = obj.CarBrandID;
-                auction.CarTypeID = obj.CarTypeID;
+                auction.Min_bid = (int)obj.Min_bid;
+                auction.Max_bid = (int)obj.Max_bid;
+                auction.CarBrandID = (int)obj.CarBrandID;
+                auction.CarTypeID = (int)obj.CarTypeID;
                 auction.CreationDate = DateTime.Now;
                 _db.Auction.Add(auction);
                 _db.SaveChanges();
