@@ -13,135 +13,138 @@
         <div class="card-body">
 
             <form enctype="multipart/form-data" asp-action="Create">
+                <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label asp-for="Title"></label>
                             <input asp-for="Title" class="form-control" placeholder="Please enter a title for the auction">
+                            <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                     </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="Duration" class="control-label"></label>
-                                <select asp-for="Duration" class="form-control">
-                                    <option value="">Select the auction duration</option>
-                                    <option value="1">1 Day</option>
-                                    @for (int i = 2; i <= 9; i++)
-                                    {
-
-                                        <option value="@i">@i Day</option>
-                                    }
-
-                                </select>
-                                <span asp-validation-for="Duration" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="CarBrandID" class="control-label"></label>
-                                <select asp-for="CarBrandID" class="form-control" id="brandDropdown">
-                                    <option value="">Choose a car brand</option>
-                                    @foreach (var brand in Model.Brands)
-                                    {
-                                        <option value="@brand.CarBrandID">@brand.Brand </option>
-                                    }
-                                </select>
-                                <span asp-validation-for="CarBrandID" class="text-danger"></span>
-                            </div>
-                        </div>
-
-
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="Min_bid" class="control-label"></label>
-                                <select asp-for="Min_bid" class="form-control">
-                                    <option value="">Starting bid</option>
-                                    <option value="100">100</option>
-                                    <option value="500">500</option>
-                                    <option value="1000">1000</option>
-                                </select>
-                                <span asp-validation-for="Min_bid" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="CarTypeID" class="control-label"></label>
-                                <select id="carTypes" asp-for="CarTypeID" class="form-control">
-                                    <option>Choose a car brand first</option>
-                                </select>
-                                <span asp-validation-for="CarTypeID" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="Max_bid" class="control-label"></label>
-                                <select asp-for="Max_bid" class="form-control">
-                                    <option value="">Winning bid</option>
-                                    <option value="1000">1000</option>
-                                    <option value="5000">5000</option>
-                                    <option value="10000">10000</option>
-                                </select>
-                                <span asp-validation-for="Max_bid" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="ImageFiles" class="control-label"></label>
-                                <div class="custom-file">
-                                    <input asp-for="ImageFiles" class="custom-file-input" id="customFile" accept="image/*" multiple>
-                                    <label class="custom-file-label" for="customFile">Choose file</label>
-                                </div>
-                                <span asp-validation-for="ImageFiles" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label asp-for="Description"></label>
-                                <textarea class="form-control" asp-for="Description" rows="5"></textarea>
-                            </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <p>Please select car options:</p>
-                            <div class="col-md-6">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Electric Windows</label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Heated seats</label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Sunroof</label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Keyless Entry</label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Keyless Go</label>
-                                </div>
-                            </div>
-
-                        </div>
-                        <br />
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <input type="submit" value="submit" class="btn btn-success text-uppercase" />
-                            <a asp-action="Index" class="btn btn-primary "> Back to List</a>
+                            <label asp-for="Duration" class="control-label"></label>
+                            <select asp-for="Duration" class="form-control">
+                                <option value="">Select the auction duration</option>
+                                <option value="1">1 Day</option>
+                                @for (int i = 2; i <= 9; i++)
+                                {
+
+                                    <option value="@i">@i Day</option>
+                                }
+
+                            </select>
+                            <span asp-validation-for="Duration" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CarBrandID" class="control-label"></label>
+                            <select asp-for="CarBrandID" class="form-control" id="brandDropdown">
+                                <option value="">Choose a car brand</option>
+                                @foreach (var brand in Model.Brands)
+                                {
+                                    <option value="@brand.CarBrandID">@brand.Brand </option>
+                                }
+                            </select>
+                            <span asp-validation-for="CarBrandID" class="text-danger"></span>
+                        </div>
+                    </div>
 
 
-</form>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Min_bid" class="control-label"></label>
+                            <select asp-for="Min_bid" class="form-control">
+                                <option value="">Starting bid</option>
+                                <option value="100">100</option>
+                                <option value="500">500</option>
+                                <option value="1000">1000</option>
+                            </select>
+                            <span asp-validation-for="Min_bid" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CarTypeID" class="control-label"></label>
+                            <select id="carTypes" asp-for="CarTypeID" class="form-control">
+                                <option value="">Choose a car brand first</option>
+                            </select>
+                            <span asp-validation-for="CarTypeID" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Max_bid" class="control-label"></label>
+                            <select asp-for="Max_bid" class="form-control">
+                                <option value="">Winning bid</option>
+                                <option value="1000">1000</option>
+                                <option value="5000">5000</option>
+                                <option value="10000">10000</option>
+                            </select>
+                            <span asp-validation-for="Max_bid" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ImageFiles" class="control-label"></label>
+                            <div class="custom-file">
+                                <input asp-for="ImageFiles" class="custom-file-input" id="customFile" accept="image/*" multiple>
+                                <label class="custom-file-label" for="customFile">Choose file</label>
+                            </div>
+                            <span asp-validation-for="ImageFiles" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Description"></label>
+                            <textarea class="form-control" asp-for="Description" rows="5"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p>Please select car options:</p>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Electric Windows</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Heated seats</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Sunroof</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Keyless Entry</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Keyless Go</label>
+                        </div>
+                    </div>
+
+                </div>
+                <br />
+                <div class="form-group">
+                    <input type="submit" value="submit" class="btn btn-success text-uppercase" />
+                    <a asp-action="Index" class="btn btn-primary "> Back to List</a>
+                </div>
+
+
+            </form>
             <p>
 
             </p>

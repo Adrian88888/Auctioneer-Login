@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Auctioneer.Controllers
 {
@@ -26,14 +25,18 @@ namespace Auctioneer.Controllers
         public IActionResult Index()
         {
             List<Auction>  auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
-            AuctionsViewModel model = new AuctionsViewModel();
-            model.Auctions = new List<AuctionViewModel>();
-            
+            AuctionsViewModel model = new()
+            {
+                Auctions = new List<AuctionViewModel>()
+            };
+
 
             foreach ( var auction in auctions )
             {
-                var auctionViewModel = new AuctionViewModel();
-                auctionViewModel.Images = new List<Gallery>();
+                var auctionViewModel = new AuctionViewModel
+                {
+                    Images = new List<Gallery>()
+                };
                 List<Gallery> images = auction.Gallery;
 
                 foreach ( var image in images )
@@ -57,14 +60,18 @@ namespace Auctioneer.Controllers
         public IActionResult ExpiredAuctions()
         {
             List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
-            AuctionsViewModel model = new AuctionsViewModel();
-            model.Auctions = new List<AuctionViewModel>();
+            AuctionsViewModel model = new()
+            {
+                Auctions = new List<AuctionViewModel>()
+            };
 
 
             foreach (var auction in auctions)
             {
-                var auctionViewModel = new AuctionViewModel();
-                auctionViewModel.Images = new List<Gallery>();
+                var auctionViewModel = new AuctionViewModel
+                {
+                    Images = new List<Gallery>()
+                };
                 List<Gallery> images = auction.Gallery;
 
                 foreach (var image in images)
@@ -87,23 +94,29 @@ namespace Auctioneer.Controllers
         {
            List<CarBrand> carBrands = _db.CarBrand.ToList();
            List<CarType> carTypes = _db.CarType.ToList();
-            AuctionViewModel model = new AuctionViewModel();
-            model.Brands = new List<CarBrandViewModel>();
-            model.Types = new List<CarTypeViewModel>();
+            AuctionViewModel model = new()
+            {
+                Brands = new List<CarBrandViewModel>(),
+                Types = new List<CarTypeViewModel>()
+            };
 
             foreach ( var carBrand in carBrands)
             {
-                var carBrandViewModel = new CarBrandViewModel();             
-                carBrandViewModel.CarBrandID = carBrand.CarBrandID;
-                carBrandViewModel.Brand = carBrand.Brand;
+                var carBrandViewModel = new CarBrandViewModel
+                {
+                    CarBrandID = carBrand.CarBrandID,
+                    Brand = carBrand.Brand
+                };
                 model.Brands.Add(carBrandViewModel);            
             }
             foreach (var carType in carTypes)
             {
-                var carTypeViewModel = new CarTypeViewModel();
-                carTypeViewModel.CarTypeID = carType.CarTypeID;
-                carTypeViewModel.Type = carType.Type;
-                carTypeViewModel.CarBrandID = carType.CarBrandID;
+                var carTypeViewModel = new CarTypeViewModel
+                {
+                    CarTypeID = carType.CarTypeID,
+                    Type = carType.Type,
+                    CarBrandID = carType.CarBrandID
+                };
                 model.Types.Add(carTypeViewModel);
             }
 
@@ -148,8 +161,31 @@ namespace Auctioneer.Controllers
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            List<CarBrand> carBrands = _db.CarBrand.ToList();
+            List<CarType> carTypes = _db.CarType.ToList();
+            obj.Brands = new List<CarBrandViewModel>();
+            obj.Types = new List<CarTypeViewModel>();
 
-            return View(obj);
+            foreach (var carBrand in carBrands)
+            {
+                var carBrandViewModel = new CarBrandViewModel
+                {
+                    CarBrandID = carBrand.CarBrandID,
+                    Brand = carBrand.Brand
+                };
+                obj.Brands.Add(carBrandViewModel);
+            }
+            foreach (var carType in carTypes)
+            {
+                var carTypeViewModel = new CarTypeViewModel
+                {
+                    CarTypeID = carType.CarTypeID,
+                    Type = carType.Type,
+                    CarBrandID = carType.CarBrandID
+                };
+                obj.Types.Add(carTypeViewModel);
+            }
+           return View(obj);
         }
         public ActionResult GetTypesByBrand(int id)
         {
