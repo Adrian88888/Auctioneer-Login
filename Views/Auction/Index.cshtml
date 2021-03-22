@@ -26,7 +26,7 @@
 <div class="container p-3">
     <div class="row pt-4">
         <div class="col-6">
-            <h2 class="text-white">Live Auctions</h2>
+            <h2 class="text-dark">Live Auctions</h2>
         </div>
         <div class="col-6">
             <a asp-action="ExpiredAuctions" class="btn btn-primary float-right"> See expired auctions </a>
@@ -46,11 +46,11 @@
         @if (timeRemaining.TotalSeconds > 0)
                         {
         <div class="row p-2 bg-white border rounded">
-            <div class="col-md-3 mt-1"><img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true"></div>
+            <div class="col-md-3 mt-1"><img class="img-fluid img-responsive rounded product-image"src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true"></div>
             <div class="col-md-6 mt-1">
                 <h5>@obj.Brand @obj.Type</h5>
                 <p class="text-justify text-truncate para mb-0">@obj.Title</p>
-             
+
                 <div>
                     <p class="text-danger">Expiry Date: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
                     <p class="text-justify text-success font-weight-bold">
@@ -59,14 +59,16 @@
                                 startCountdown(@timeRemaining.TotalSeconds, '@("time-left" + obj.AuctionID)');
                         </script>
                 </div>
+                <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
+
             </div>
             <div class="align-items-center align-content-center col-md-3 border-left mt-1">
-                <div class="d-flex flex-row align-items-center">
-                    <h4 class="mr-1">$@obj.Min_bid</h4><span class="strike-text text-success">$@obj.Max_bid</span>
-                </div>
-                <h6 class="text">Current bid</h6>
-                <div class="d-flex flex-column mt-4">
-                    <a class="btn btn-primary btn-sm" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item text-primary">Starting bid: $@obj.Min_bid</li>
+                    <li class="list-group-item">Current bid: </li>
+                    <li class="list-group-item text-success">Winning bid: $@obj.Max_bid</li>
+                </ul>
+                <div class="d-flex flex-column mt-4">                
                     <a class="btn btn-outline-primary btn-sm mt-2" asp-controller="Bids" asp-action="Index">Place bid</a>
                 </div>
             </div>

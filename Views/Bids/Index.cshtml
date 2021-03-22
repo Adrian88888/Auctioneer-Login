@@ -3,6 +3,35 @@
     ViewData["Title"] = "Place Bid";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Place bid</h1>
+<div class="col-md-10 mx-auto py-4">
+    <div class="card">
+        <div class="card-header bg-primary text-uppercase text-white">
+            <h4>Place bid </h4>
+        </div>
+        <div class="card-body">
+
+            <form enctype="multipart/form-data" asp-action="Create">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label ></label>
+                            <input class="form-control" placeholder="Please enter the amount that you would like to bid">
+                            @*<span asp-validation-for="Bid" class="text-danger"></span>*@
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <input type="submit" value="Place bid" class="btn btn-success text-uppercase" />
+                    <a asp-action="Index" asp-controller="Auction" class="btn btn-primary "> Back to List</a>
+                </div>
+
+
+            </form>
+            <p>
+
+            </p>
+        </div>
+    </div>
 </div>
