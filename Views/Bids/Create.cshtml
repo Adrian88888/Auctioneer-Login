@@ -1,0 +1,47 @@
+﻿@model Auctioneer.ViewModels.BidViewModel
+
+    @{
+        ViewData["Title"] = "Place Bid";
+    }
+
+    <div class="col-md-10 mx-auto py-4">
+        <div class="card">
+            <div class="card-header bg-primary text-uppercase text-white">
+                <h4>Place bid </h4>
+            </div>
+            <div class="card-body">
+
+                <form enctype="multipart/form-data" asp-action="Create">
+                    <div class="alert alert-primary" role="alert">
+                        Starting bid: $@Model.Min_bid
+                    </div>
+                    <div class="alert alert-success" role="alert">
+                        Winning bid: $@Model.Max_bid
+                    </div>
+                    <div class="alert alert-warning" role="alert">
+                        Current bid: $@Model.Current_bid
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Amount"></label>
+                                <input asp-for="Amount" class="form-control" placeholder="Please enter the amount that you would like to bid">
+                                <span asp-validation-for="Amount" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <input type="submit" value="Place bid" class="btn btn-success text-uppercase" />
+                        <a asp-action="Index" asp-controller="Auction" class="btn btn-primary "> Back to auctions</a>
+                    </div>
+
+
+                </form>
+                <p>
+
+                </p>
+            </div>
+        </div>
+    </div>

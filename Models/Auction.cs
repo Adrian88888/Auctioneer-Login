@@ -17,6 +17,8 @@ namespace Auctioneer.Models
         }
         [Key]
         public int AuctionID { get; set; }
+        public string AuctionOwner { get; set; }
+        public string AuctionWinner { get; set; }
         public int Duration { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -24,6 +26,7 @@ namespace Auctioneer.Models
         public int Min_bid { get; set; }
         [DisplayName("Winning Bid")]
         public int Max_bid { get; set; }
+        public int Current_bid { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpiryDate
         {

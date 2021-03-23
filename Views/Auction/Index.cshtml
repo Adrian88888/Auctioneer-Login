@@ -29,7 +29,7 @@
             <h2 class="text-dark">Live Auctions</h2>
         </div>
         <div class="col-6">
-            <a asp-action="ExpiredAuctions" class="btn btn-primary float-right"> See expired auctions </a>
+            <a asp-action="ExpiredAuctions" class="btn btn-primary float-right"> Finished auctions </a>
         </div>
     </div>
     <br /><br />
@@ -38,7 +38,7 @@
     {
         <div class="container mt-5 mb-5">
 <div class="d-flex justify-content-center row">
-    <div class="col-md-10">
+    <div class="col-md-12">
         @foreach (var obj in Model.Auctions)
 
                     {
@@ -46,31 +46,40 @@
         @if (timeRemaining.TotalSeconds > 0)
                         {
         <div class="row p-2 bg-white border rounded">
-            <div class="col-md-3 mt-1"><img class="img-fluid img-responsive rounded product-image"src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true"></div>
-            <div class="col-md-6 mt-1">
+            <div class="col-md-4 mt-2">
+                <img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true">
+                <p class="text-info font-weight-bold mt-3">Owner: @obj.AuctionOwner </p>
+                <p class="text-success font-weight-bold">Current winner: @obj.AuctionWinner</p>
+            </div>
+            <div class="col-md-4 border-left mt-2">
                 <h5>@obj.Brand @obj.Type</h5>
-                <p class="text-justify text-truncate para mb-0">@obj.Title</p>
+                <p class="text-info">@obj.Title</p>
 
-                <div>
                     <p class="text-danger">Expiry Date: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
-                    <p class="text-justify text-success font-weight-bold">
+                    <p class="text-success font-weight-bold">
                         Time remaining: <span id="@("time-left" + obj.AuctionID)"></span>
                         <script>
                                 startCountdown(@timeRemaining.TotalSeconds, '@("time-left" + obj.AuctionID)');
                         </script>
-                </div>
-                <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
-
+                        <div class="align-bottom">
+                            <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
+                            <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@obj.AuctionID">Place bid</a>
+                        </div>
             </div>
-            <div class="align-items-center align-content-center col-md-3 border-left mt-1">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item text-primary">Starting bid: $@obj.Min_bid</li>
-                    <li class="list-group-item">Current bid: </li>
-                    <li class="list-group-item text-success">Winning bid: $@obj.Max_bid</li>
-                </ul>
-                <div class="d-flex flex-column mt-4">                
-                    <a class="btn btn-outline-primary btn-sm mt-2" asp-controller="Bids" asp-action="Index">Place bid</a>
+            <div class="col-md-4 border-left mt-2">
+                <div class="alert alert-primary" role="alert">
+                    Starting bid: $@obj.Min_bid
                 </div>
+                <div class="alert alert-success" role="alert">
+                    Winning bid: $@obj.Max_bid
+                </div>
+                <div class="alert alert-warning" role="alert">
+                    Current bid: $@obj.Current_bid
+                </div>
+                <div class="alert alert-info" role="alert">
+                    Your last bid: $@obj.UserLastBid
+                </div>              
+
             </div>
         </div>
         <br />

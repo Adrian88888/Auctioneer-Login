@@ -14,6 +14,9 @@ namespace Auctioneer.ViewModels
 
         
         public int AuctionID { get; set; }
+        public string AuctionOwner { get; set; }
+        public string AuctionWinner { get; set; }
+        public int UserLastBid { get; set; }
 
         [Required(ErrorMessage = "Duration is required")]
         public int Duration { get; set; }
@@ -30,6 +33,7 @@ namespace Auctioneer.ViewModels
         [DisplayName("Winning Bid")]
         [Required(ErrorMessage = "Winning bid is required")]
         public int? Max_bid { get; set; }
+        public int? Current_bid { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpiryDate
         {

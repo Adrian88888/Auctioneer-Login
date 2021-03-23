@@ -14,48 +14,47 @@
         </div>
     </div>
     <br /><br />
-          <div class="row">
-              @if (Model.Auctions.Count() > 0)
-              {
-                  <div class="container mt-5 mb-5">
-                      <div class="d-flex justify-content-center row">
-                          <div class="col-md-10">
-                              @foreach (var obj in Model.Auctions)
+    <div class="row">
+        @if (Model.Auctions.Count() > 0)
+        {
+            <div class="container mt-5 mb-5">
+                <div class="d-flex justify-content-center row">
+                    <div class="col-md-10">
+                        @foreach (var obj in Model.Auctions)
 
-                              {
-                                  TimeSpan timeRemaining = new TimeSpan(obj.ExpiryDate.Ticks - DateTime.Now.Ticks);
-                                  @if (timeRemaining.TotalSeconds < 0)
-                                  {
-                                      <div class="row p-2 bg-white border rounded">
-                                          <div class="col-md-3 mt-1"><img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true"></div>
-                                          <div class="col-md-6 mt-1">
-                                              <h5>@obj.Brand @obj.Type</h5>
-                                              <p class="text-justify text-truncate para mb-0">@obj.Title </p>
-                                              <br />
-                                              <div>
-                                                  <p class="text-danger font-weight-bold">The auction has ended: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
-                                              </div>
-                                          </div>
-                                          <div class="align-items-center align-content-center col-md-3 border-left mt-1">
-                                              <div class="d-flex flex-row align-items-center">
-                                                  <h4 class="mr-1">$@obj.Min_bid</h4><span class="strike-text text-success">$@obj.Max_bid</span>
-                                              </div>
-                                              <h6 class="text">Current bid</h6>
-                                              <div class="d-flex flex-column mt-4">
-                                                  <a class="btn btn-primary btn-sm" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
-                                              </div>
-                                          </div>
-                                      </div>
-                                      <br />
-                                  }
-                              }
-                          </div>
-                      </div>
-                  </div>
-              }
-              else
-              {
-                  <p>There are no active auctions at the moment.</p>
-              }
+                        {
+                            TimeSpan timeRemaining = new TimeSpan(obj.ExpiryDate.Ticks - DateTime.Now.Ticks);
+                            @if (timeRemaining.TotalSeconds < 0)
+                            {
+                                <div class="row p-2 bg-white border rounded">
+                                    <div class="col-md-3 mt-1"><img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true"></div>
+                                    <div class="col-md-6 mt-1">
+                                        <h5>@obj.Brand @obj.Type</h5>
+                                        <p class="text-justify text-truncate para mb-0">@obj.Title </p>
+                                        <br />
+                                        <div>
+                                            <p class="text-danger font-weight-bold">The auction has ended: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
+                                            <p class="text-success font-weight-bold">Auction winner: @obj.AuctionWinner </p>
+                                        </div>
+                                    </div>
+                                    <div class="align-items-center align-content-center col-md-3 border-left mt-1">
 
-          </div>
+                                        <div class="d-flex flex-column mt-4">
+                                            <a class="btn btn-primary btn-sm" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>There are no active auctions at the moment.</p>
+        }
+
+    </div>
+</div>

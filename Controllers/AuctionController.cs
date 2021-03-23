@@ -1,6 +1,7 @@
 ﻿using Auctioneer.Data;
 using Auctioneer.Models;
 using Auctioneer.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@ namespace Auctioneer.Controllers
             _db = db;
             this._hostEnvironment = hostEnvironment;
         }
+        [AllowAnonymous]
         public IActionResult Index()
         {
             List<Auction>  auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
@@ -37,9 +39,63 @@ namespace Auctioneer.Controllers
                 {
                     Images = new List<Gallery>()
                 };
+
+                //load auction images from Gallery 
                 List<Gallery> images = auction.Gallery;
 
                 foreach ( var image in images )
+                {
+                    auctionViewModel.Images.Add(image);
+                    auctionViewModel.Image = image;
+                }
+                //load auction details from database
+                auctionViewModel.AuctionID = auction.AuctionID;
+                auctionViewModel.Title = auction.Title;
+                auctionViewModel.Description = auction.Description;
+                auctionViewModel.CreationDate = auction.CreationDate;
+                auctionViewModel.Duration = auction.Duration;
+                auctionViewModel.Max_bid = auction.Max_bid;
+                auctionViewModel.Min_bid = auction.Min_bid;
+                auctionViewModel.Current_bid = auction.Current_bid;
+                auctionViewModel.Brand = auction.CarBrand.Brand;
+                auctionViewModel.Type = auction.CarType.Type;
+                auctionViewModel.AuctionOwner = auction.AuctionOwner;
+                auctionViewModel.AuctionWinner = auction.AuctionWinner;
+
+                //load user last bid
+                List<Bids> bids = _db.Bids.ToList();
+                foreach (var bid in bids)
+                {
+                    if (bid.UserID == User.Identity.Name && bid.AuctionID == auction.AuctionID)
+                    {
+                        auctionViewModel.UserLastBid = bid.Amount;
+                    }
+                }
+
+                model.Auctions.Add(auctionViewModel);
+            }
+            return View(model);
+        }
+        public IActionResult MyAuctions()
+        {
+            List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
+            AuctionsViewModel model = new()
+            {
+                Auctions = new List<AuctionViewModel>()
+            };
+
+
+            foreach (var auction in auctions)
+            {
+                if (auction.AuctionOwner == User.Identity.Name)
+                { 
+                    var auctionViewModel = new AuctionViewModel
+                    {
+                        Images = new List<Gallery>()
+                    };
+                List<Gallery> images = auction.Gallery;
+
+                foreach (var image in images)
                 {
                     auctionViewModel.Images.Add(image);
                     auctionViewModel.Image = image;
@@ -51,12 +107,18 @@ namespace Auctioneer.Controllers
                 auctionViewModel.Duration = auction.Duration;
                 auctionViewModel.Max_bid = auction.Max_bid;
                 auctionViewModel.Min_bid = auction.Min_bid;
+                auctionViewModel.Current_bid = auction.Current_bid;
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
+                auctionViewModel.AuctionOwner = auction.AuctionOwner;
+                auctionViewModel.AuctionWinner = auction.AuctionWinner;
                 model.Auctions.Add(auctionViewModel);
+            }
             }
             return View(model);
         }
+
+        [AllowAnonymous]
         public IActionResult ExpiredAuctions()
         {
             List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
@@ -87,6 +149,8 @@ namespace Auctioneer.Controllers
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
                 auctionViewModel.Title = auction.Title;
+                auctionViewModel.AuctionOwner = auction.AuctionOwner;
+                auctionViewModel.AuctionWinner = auction.AuctionWinner;
                 model.Auctions.Add(auctionViewModel);
             }
             return View(model);
@@ -158,6 +222,8 @@ namespace Auctioneer.Controllers
                 auction.CarBrandID = (int)obj.CarBrandID;
                 auction.CarTypeID = (int)obj.CarTypeID;
                 auction.CreationDate = DateTime.Now;
+                auction.AuctionOwner = User.Identity.Name;
+                auction.AuctionWinner = "None";
                 _db.Auction.Add(auction);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
@@ -193,18 +259,9 @@ namespace Auctioneer.Controllers
             var types = _db.CarType.Where(x => x.CarBrandID == id).Select(x => new { id = x.CarTypeID, type = x.Type }).ToList();
             return Json(types);
         }
+        [AllowAnonymous]
         public IActionResult Display(int? id)
         {
-            //if (id == null || id == 0)
-            //{
-            //    return NotFound();
-            //}
-
-            //var obj = _db.Auction.Find(id);
-            //if (obj == null)
-            //{
-            //    return NotFound();
-            //}
             if (id == null || id == 0)
             {
                 return NotFound();
