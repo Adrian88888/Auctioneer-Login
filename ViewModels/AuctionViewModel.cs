@@ -29,11 +29,11 @@ namespace Auctioneer.ViewModels
 
         [DisplayName("Starting Bid")]
         [Required(ErrorMessage = "Starting bid is required")]
-        public int? Min_bid { get; set; }
+        public int? MinBid { get; set; }
         [DisplayName("Winning Bid")]
         [Required(ErrorMessage = "Winning bid is required")]
-        public int? Max_bid { get; set; }
-        public int? Current_bid { get; set; }
+        public int? MaxBid { get; set; }
+        public int? CurrentBid { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpiryDate
         {

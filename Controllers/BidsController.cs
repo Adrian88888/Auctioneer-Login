@@ -21,29 +21,12 @@ namespace Auctioneer.Controllers
         }
         public IActionResult Index()
         {
-            //List<Bids> bids = _db.Bids.ToList();
-            //List<Bids> model = new();
-
-            //foreach (var bid in bids)
-            //{
-            //    if (bid.UserID == User.Identity.Name)
-            //    {
-            //        model.Add(bid);
-            //    }
-            //}
-            //    return View(model);
             List<Bids> bids = _db.Bids.ToList();
-            List<Bids> highestBids = new();
             List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
             AuctionsViewModel model = new()
             {
                 Auctions = new List<AuctionViewModel>()
             };
-            foreach (var highBid in bids)
-            {
-
-            }
-
             foreach ( var bid in bids)
             { 
                 if (bid.UserID == User.Identity.Name)
@@ -52,25 +35,17 @@ namespace Auctioneer.Controllers
             {
                         if (auction.AuctionID == bid.AuctionID)
                         {
-                            var auctionViewModel = new AuctionViewModel
-                            {
-                                Images = new List<Gallery>()
-                            };
-                            List<Gallery> images = auction.Gallery;
+                            AuctionViewModel auctionViewModel = new();
 
-                            foreach (var image in images)
-                            {
-                                auctionViewModel.Images.Add(image);
-                                auctionViewModel.Image = image;
-                            }
+                            auctionViewModel.Image = auction.Gallery.FirstOrDefault();
                             auctionViewModel.AuctionID = auction.AuctionID;
                             auctionViewModel.Title = auction.Title;
                             auctionViewModel.Description = auction.Description;
                             auctionViewModel.CreationDate = auction.CreationDate;
                             auctionViewModel.Duration = auction.Duration;
-                            auctionViewModel.Max_bid = auction.Max_bid;
-                            auctionViewModel.Min_bid = auction.Min_bid;
-                            auctionViewModel.Current_bid = auction.Current_bid;
+                            auctionViewModel.MaxBid = auction.MaxBid;
+                            auctionViewModel.MinBid = auction.MinBid;
+                            auctionViewModel.CurrentBid = auction.CurrentBid;
                             auctionViewModel.Brand = auction.CarBrand.Brand;
                             auctionViewModel.Type = auction.CarType.Type;
                             auctionViewModel.AuctionOwner = auction.AuctionOwner;
@@ -94,12 +69,44 @@ namespace Auctioneer.Controllers
         [HttpGet]
         public IActionResult Create(int? id)
         {
-            BidViewModel model = new();
-            Auction auction = _db.Auction.FirstOrDefault(x => x.AuctionID == (int)id);
-            model.Min_bid = auction.Min_bid;
-            model.Max_bid = auction.Max_bid;
-            model.Current_bid = auction.Current_bid;
+            BidViewModel model = new();           
 
+            if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
+            {
+                model.Balance = _db.Deposits.FirstOrDefault(x => x.UserID == User.Identity.Name).Balance;
+            }
+            else
+            {
+                model.Balance = 0;
+            }
+
+            List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
+            foreach (var auction in auctions)
+            {
+                if (auction.AuctionID == id)
+                {
+                    model.Image = auction.Gallery.FirstOrDefault();
+                    model.MinBid = auction.MinBid;
+                    model.MaxBid = auction.MaxBid;
+                    model.CurrentBid = auction.CurrentBid;
+                    model.AuctionID = auction.AuctionID;
+                    model.Title = auction.Title;
+                    model.Description = auction.Description;
+                    model.CreationDate = auction.CreationDate;
+                    model.Duration = auction.Duration;
+                    model.Brand = auction.CarBrand.Brand;
+                    model.Type = auction.CarType.Type;
+                    model.AuctionOwner = auction.AuctionOwner;
+                    model.AuctionWinner = auction.AuctionWinner;
+
+                    if (_db.Bids.Any(d => d.UserID == User.Identity.Name) && _db.Bids.Any(b => b.AuctionID == auction.AuctionID))
+                    {
+                        Bids userBid = _db.Bids.Where(b => b.UserID == User.Identity.Name).Where(b => b.AuctionID == auction.AuctionID).FirstOrDefault();
+                        model.UserLastBid = userBid.Amount;
+                    }                      
+                    return View(model);
+                }
+            }
             return View(model);
         }
         [HttpPost]
@@ -108,8 +115,10 @@ namespace Auctioneer.Controllers
             if (ModelState.IsValid)
             {
                 Auction auction = _db.Auction.FirstOrDefault(x => x.AuctionID == (int)id);
-                //check that the bided amount is higher than the min bid/current bid
-                if (model.Amount > auction.Current_bid && model.Amount > auction.Min_bid)
+                Deposits deposit = _db.Deposits.FirstOrDefault(x => x.UserID == User.Identity.Name);
+
+                //check that the bided amount is higher than the min bid/current bid and lower than his current balance
+                if (model.Amount > auction.CurrentBid && model.Amount > auction.MinBid && model.Amount <= model.Balance)
                 {
                     //check if the user has bided for the same auction before and modify the previous bid amount if he did.
                     Boolean existing = false;
@@ -122,7 +131,7 @@ namespace Auctioneer.Controllers
                             existing = true;
                         }
                     }
-                    auction.Current_bid = model.Amount;
+                    auction.CurrentBid = model.Amount;
                     auction.AuctionWinner = User.Identity.Name;
                     //if the user never bided for the same auction before, add a new bid
                     if (!existing)
@@ -139,11 +148,16 @@ namespace Auctioneer.Controllers
                 //if the bided amount is not valid, return view with model error
                 else
                 {
-                    model.Min_bid = auction.Min_bid;
-                    model.Max_bid = auction.Max_bid;
-                    model.Current_bid = auction.Current_bid;
-                    ModelState.AddModelError("Amount", "The bid amount must be higher than the minimum bid/current bid.");
-                    return View(model);
+                    if (model.Amount < auction.CurrentBid || model.Amount < auction.MinBid)
+                    {
+                        ModelState.AddModelError("Amount", "The bid amount must be higher than the minimum bid/current bid.");
+                        return View(model);
+                    }
+                    else
+                    {
+                            ModelState.AddModelError("Amount", "You cannot bid more than you account balance!");
+                        return View(model);
+                    }
                 }
             }
             return View(model);

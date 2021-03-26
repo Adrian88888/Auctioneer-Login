@@ -54,9 +54,9 @@ namespace Auctioneer.Controllers
                 auctionViewModel.Description = auction.Description;
                 auctionViewModel.CreationDate = auction.CreationDate;
                 auctionViewModel.Duration = auction.Duration;
-                auctionViewModel.Max_bid = auction.Max_bid;
-                auctionViewModel.Min_bid = auction.Min_bid;
-                auctionViewModel.Current_bid = auction.Current_bid;
+                auctionViewModel.MaxBid = auction.MaxBid;
+                auctionViewModel.MinBid = auction.MinBid;
+                auctionViewModel.CurrentBid = auction.CurrentBid;
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
                 auctionViewModel.AuctionOwner = auction.AuctionOwner;
@@ -105,9 +105,9 @@ namespace Auctioneer.Controllers
                 auctionViewModel.Description = auction.Description;
                 auctionViewModel.CreationDate = auction.CreationDate;
                 auctionViewModel.Duration = auction.Duration;
-                auctionViewModel.Max_bid = auction.Max_bid;
-                auctionViewModel.Min_bid = auction.Min_bid;
-                auctionViewModel.Current_bid = auction.Current_bid;
+                auctionViewModel.MaxBid = auction.MaxBid;
+                auctionViewModel.MinBid = auction.MinBid;
+                auctionViewModel.CurrentBid = auction.CurrentBid;
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
                 auctionViewModel.AuctionOwner = auction.AuctionOwner;
@@ -144,8 +144,8 @@ namespace Auctioneer.Controllers
                 auctionViewModel.AuctionID = auction.AuctionID;
                 auctionViewModel.CreationDate = auction.CreationDate;
                 auctionViewModel.Duration = auction.Duration;
-                auctionViewModel.Max_bid = auction.Max_bid;
-                auctionViewModel.Min_bid = auction.Min_bid;
+                auctionViewModel.MaxBid = auction.MaxBid;
+                auctionViewModel.MinBid = auction.MinBid;
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
                 auctionViewModel.Title = auction.Title;
@@ -189,17 +189,17 @@ namespace Auctioneer.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(AuctionViewModel obj)
+        public IActionResult Create(AuctionViewModel auctionViewModel)
         {
             if (ModelState.IsValid)
             {
                 var auction = new Auction();
                 //save image to wwwroot/image
-                if ( obj.ImageFiles != null && obj.ImageFiles.Count > 0)
+                if ( auctionViewModel.ImageFiles != null && auctionViewModel.ImageFiles.Count > 0)
                 {
                     auction.Gallery = new List<Gallery>();
                     
-                    foreach (IFormFile imageFile in obj.ImageFiles )
+                    foreach (IFormFile imageFile in auctionViewModel.ImageFiles )
                     {
                         var gallery = new Gallery();
                        
@@ -214,13 +214,13 @@ namespace Auctioneer.Controllers
                 }
                 //insert the record to database
                 
-                auction.Duration = (int)obj.Duration;
-                auction.Title = obj.Title;
-                auction.Description = obj.Description;
-                auction.Min_bid = (int)obj.Min_bid;
-                auction.Max_bid = (int)obj.Max_bid;
-                auction.CarBrandID = (int)obj.CarBrandID;
-                auction.CarTypeID = (int)obj.CarTypeID;
+                auction.Duration = (int)auctionViewModel.Duration;
+                auction.Title = auctionViewModel.Title;
+                auction.Description = auctionViewModel.Description;
+                auction.MinBid = (int)auctionViewModel.MinBid;
+                auction.MaxBid = (int)auctionViewModel.MaxBid;
+                auction.CarBrandID = (int)auctionViewModel.CarBrandID;
+                auction.CarTypeID = (int)auctionViewModel.CarTypeID;
                 auction.CreationDate = DateTime.Now;
                 auction.AuctionOwner = User.Identity.Name;
                 auction.AuctionWinner = "None";
@@ -230,8 +230,8 @@ namespace Auctioneer.Controllers
             }
             List<CarBrand> carBrands = _db.CarBrand.ToList();
             List<CarType> carTypes = _db.CarType.ToList();
-            obj.Brands = new List<CarBrandViewModel>();
-            obj.Types = new List<CarTypeViewModel>();
+            auctionViewModel.Brands = new List<CarBrandViewModel>();
+            auctionViewModel.Types = new List<CarTypeViewModel>();
 
             foreach (var carBrand in carBrands)
             {
@@ -240,7 +240,7 @@ namespace Auctioneer.Controllers
                     CarBrandID = carBrand.CarBrandID,
                     Brand = carBrand.Brand
                 };
-                obj.Brands.Add(carBrandViewModel);
+                auctionViewModel.Brands.Add(carBrandViewModel);
             }
             foreach (var carType in carTypes)
             {
@@ -250,9 +250,9 @@ namespace Auctioneer.Controllers
                     Type = carType.Type,
                     CarBrandID = carType.CarBrandID
                 };
-                obj.Types.Add(carTypeViewModel);
+                auctionViewModel.Types.Add(carTypeViewModel);
             }
-           return View(obj);
+           return View(auctionViewModel);
         }
         public ActionResult GetTypesByBrand(int id)
         {
@@ -274,11 +274,13 @@ namespace Auctioneer.Controllers
             {
                 if (auction.AuctionID == id)
                 {
+                    model.AuctionID = auction.AuctionID;
                     model.Duration = auction.Duration;
                     model.Description = auction.Description;
                     model.CreationDate = auction.CreationDate;
-                    model.Min_bid = auction.Min_bid;
-                    model.Max_bid = auction.Max_bid;
+                    model.MinBid = auction.MinBid;
+                    model.MaxBid = auction.MaxBid;
+                    model.CurrentBid = auction.CurrentBid;
                     model.Brand = auction.CarBrand.Brand;
                     model.Type = auction.CarType.Type;
                     model.Images = new List<Gallery>();
@@ -288,6 +290,14 @@ namespace Auctioneer.Controllers
                     {
                         model.Images.Add(image);
                         model.Image = image;
+                    }
+                    List<Bids> bids = _db.Bids.ToList();
+                    foreach (var bid in bids)
+                    {
+                        if (bid.UserID == User.Identity.Name && bid.AuctionID == auction.AuctionID)
+                        {
+                            model.UserLastBid = bid.Amount;
+                        }
                     }
                 }
             }

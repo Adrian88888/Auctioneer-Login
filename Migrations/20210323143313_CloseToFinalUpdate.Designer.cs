@@ -4,14 +4,16 @@ using Auctioneer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Auctioneer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210323143313_CloseToFinalUpdate")]
+    partial class CloseToFinalUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,24 +122,6 @@ namespace Auctioneer.Migrations
                     b.HasKey("CarTypeID");
 
                     b.ToTable("CarType");
-                });
-
-            modelBuilder.Entity("Auctioneer.Models.Deposits", b =>
-                {
-                    b.Property<int>("DepositsID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Balance")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("DepositsID");
-
-                    b.ToTable("Deposits");
                 });
 
             modelBuilder.Entity("Auctioneer.Models.Gallery", b =>

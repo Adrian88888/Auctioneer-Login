@@ -3,7 +3,26 @@
     @{
         ViewData["Title"] = "Place Bid";
     }
+<script>
+    function startCountdown(timeLeft, spanId) {
+        var interval = setInterval(countdown, 1000);
+        update();
 
+        function countdown() {
+            if (--timeLeft > 0) {
+                update();
+            }
+        }
+
+        function update() {
+            days = Math.floor(timeLeft / 86400);
+            hours = Math.floor((timeLeft % 86400) / 3600);
+            minutes = Math.floor((timeLeft % 3600) / 60);
+            seconds = timeLeft % 60;
+            document.getElementById(spanId).innerHTML = '' + days + 'D ' + hours + 'H ' + minutes + 'M ' + seconds.toFixed(0) + 'S ';
+        }
+    }
+</script>
     <div class="col-md-10 mx-auto py-4">
         <div class="card">
             <div class="card-header bg-primary text-uppercase text-white">
@@ -12,16 +31,69 @@
             <div class="card-body">
 
                 <form enctype="multipart/form-data" asp-action="Create">
-                    <div class="alert alert-primary" role="alert">
-                        Starting bid: $@Model.Min_bid
-                    </div>
-                    <div class="alert alert-success" role="alert">
-                        Winning bid: $@Model.Max_bid
-                    </div>
-                    <div class="alert alert-warning" role="alert">
-                        Current bid: $@Model.Current_bid
-                    </div>
 
+                    <input asp-for="AuctionID" hidden />
+                    <input asp-for="MaxBid" hidden />
+                    <input asp-for="MinBid" hidden />
+                    <input asp-for="CurrentBid" hidden />
+                    <input asp-for="Image.ImageName" hidden />
+                    <input asp-for="Title" hidden />
+                    <input asp-for="Description" hidden />
+                    <input asp-for="CreationDate" hidden />
+                    <input asp-for="Duration" hidden />
+                    <input asp-for="Brand" hidden />
+                    <input asp-for="Type" hidden />
+                    <input asp-for="AuctionOwner" hidden />
+                    <input asp-for="AuctionWinner" hidden />
+
+                    <div class="row p-2 bg-white border rounded">
+                        <div class="col-md-4 mt-2">
+                            <img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + Model.Image.ImageName)" asp-append-version="true">
+                            <p class="text-info font-weight-bold mt-3">Owner: @Model.AuctionOwner </p>
+                        </div>
+                        <div class="col-md-4 border-left mt-2">
+                            <h5>@Model.Brand @Model.Type</h5>
+                            <p class="text-info">@Model.Title</p>
+                            @{
+                                TimeSpan timeRemaining = new TimeSpan(Model.ExpiryDate.Ticks - DateTime.Now.Ticks);
+                            }
+                            <p class="text-danger">Expiry Date: @Model.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
+                            @if (timeRemaining.TotalSeconds > 0)
+                            {
+                                <p class="text-success font-weight-bold">
+                                    Time remaining: <span id="@("time-left" + Model.AuctionID)"></span>
+                                    <script>
+                                startCountdown(@timeRemaining.TotalSeconds, '@("time-left" + Model.AuctionID)');
+                                    </script>
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="text-danger font-weight-bold"> Auction has ended. </p>
+                            }
+                            <div class="align-bottom">
+                                <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Display" asp-route-Id="@Model.AuctionID">Details</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 border-left mt-2">
+                            <div class="alert alert-primary" role="alert">
+                                Starting bid: $@Model.MinBid
+                            </div>
+                            <div class="alert alert-success" role="alert">
+                                Winning bid: $@Model.MaxBid
+                            </div>
+                            <div class="alert alert-warning" role="alert">
+                                Current bid: $@Model.CurrentBid
+                            </div>
+                            <div class="alert alert-info" role="alert">
+                                Your last bid: $@Model.UserLastBid
+                            </div>
+
+                        </div>
+                    </div>
+                    <br />
+
+                    <p class="text-success font-weight-bold">Current Account balance: $@Model.Balance</p>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">

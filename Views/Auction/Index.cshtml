@@ -49,7 +49,7 @@
             <div class="col-md-4 mt-2">
                 <img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true">
                 <p class="text-info font-weight-bold mt-3">Owner: @obj.AuctionOwner </p>
-                <p class="text-success font-weight-bold">Current winner: @obj.AuctionWinner</p>
+                <p class="text-success font-weight-bold">Highest Bid: @obj.AuctionWinner</p>
             </div>
             <div class="col-md-4 border-left mt-2">
                 <h5>@obj.Brand @obj.Type</h5>
@@ -68,16 +68,16 @@
             </div>
             <div class="col-md-4 border-left mt-2">
                 <div class="alert alert-primary" role="alert">
-                    Starting bid: $@obj.Min_bid
+                    Starting bid: $@Convert.ToDecimal(obj.MinBid).ToString("#,##0.00")
                 </div>
                 <div class="alert alert-success" role="alert">
-                    Winning bid: $@obj.Max_bid
+                    Winning bid: $@Convert.ToDecimal(obj.MaxBid).ToString("#,##0.00")
                 </div>
                 <div class="alert alert-warning" role="alert">
-                    Current bid: $@obj.Current_bid
+                    Highest Bid: $@Convert.ToDecimal(obj.CurrentBid).ToString("#,##0.00")
                 </div>
                 <div class="alert alert-info" role="alert">
-                    Your last bid: $@obj.UserLastBid
+                    Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")
                 </div>              
 
             </div>

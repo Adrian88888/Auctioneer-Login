@@ -62,7 +62,7 @@
                                 }
                                 else
                                 {
-                                    <p class="text-success font-weight-bold"> Auction has ended. </p>
+                                    <p class="text-danger font-weight-bold"> Auction has ended. </p>
                                 }
                                 <div class="align-bottom">
                                     <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
@@ -71,13 +71,13 @@
                             </div>
                             <div class="col-md-4 border-left mt-2">
                                 <div class="alert alert-primary" role="alert">
-                                    Starting bid: $@obj.Min_bid
+                                    Starting bid: $@obj.MinBid
                                 </div>
                                 <div class="alert alert-success" role="alert">
-                                    Winning bid: $@obj.Max_bid
+                                    Winning bid: $@obj.MaxBid
                                 </div>
                                 <div class="alert alert-warning" role="alert">
-                                    Current bid: $@obj.Current_bid
+                                    Current bid: $@obj.CurrentBid
                                 </div>
                                 <div class="alert alert-info" role="alert">
                                     Your last bid: $@obj.UserLastBid

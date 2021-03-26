@@ -23,15 +23,12 @@ namespace Auctioneer.Models
         public string Title { get; set; }
         public string Description { get; set; }
         [DisplayName("Starting Bid")]
-        public int Min_bid { get; set; }
+        public int MinBid { get; set; }
         [DisplayName("Winning Bid")]
-        public int Max_bid { get; set; }
-        public int Current_bid { get; set; }
+        public int MaxBid { get; set; }
+        public int CurrentBid { get; set; }
         public DateTime CreationDate { get; set; }
-        public DateTime ExpiryDate
-        {
-            get { return CreationDate.AddDays(Duration); }
-        }
+        public DateTime ExpiryDate => CreationDate.AddDays(Duration);
         [NotMapped]
         [DisplayName("Upload Images:")]
         public List<IFormFile> ImageFiles { get; set; }

@@ -19,5 +19,6 @@ namespace Auctioneer.Data
         public DbSet<CarType> CarType { get; set; }
         public DbSet<Gallery> Gallery { get; set; }
         public DbSet<Bids> Bids { get; set; }
+        public DbSet<Deposits> Deposits { get; set; }
     }
 }
