@@ -45,11 +45,26 @@
                         TimeSpan timeRemaining = new TimeSpan(obj.ExpiryDate.Ticks - DateTime.Now.Ticks);
         @if (timeRemaining.TotalSeconds > 0)
                         {
-        <div class="row p-2 bg-white border rounded">
+        <div class="row p-1 bg-white border rounded">
             <div class="col-md-4 mt-2">
-                <img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true">
-                <p class="text-info font-weight-bold mt-3">Owner: @obj.AuctionOwner </p>
-                <p class="text-success font-weight-bold">Highest Bid: @obj.AuctionWinner</p>
+                <img class="rounded" style="width:295px"src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true">
+                <div class="alert col-md-11 mt-1 alert-primary" role="alert">
+                    Owner: @obj.AuctionOwner
+                </div>
+                @if (obj.AuctionWinner == User.Identity.Name)
+                {
+                    <div class="alert col-md-11 mt-1 alert-success" role="alert">
+                        Highest bid: @obj.AuctionWinner
+                    </div>
+                }
+                else
+                {
+                    <div class="alert col-md-11 mt-1 alert-danger" role="alert">
+                        Highest bid: @obj.AuctionWinner
+                    </div>
+                }
+                @*<p class="text-info font-weight-bold mt-3">Owner: @obj.AuctionOwner </p>*@
+                @*<p class="text-success font-weight-bold">Highest Bid: @obj.AuctionWinner</p>*@
             </div>
             <div class="col-md-4 border-left mt-2">
                 <h5>@obj.Brand @obj.Type</h5>
@@ -70,15 +85,26 @@
                 <div class="alert alert-primary" role="alert">
                     Starting bid: $@Convert.ToDecimal(obj.MinBid).ToString("#,##0.00")
                 </div>
-                <div class="alert alert-success" role="alert">
+                <div class="alert alert-primary" role="alert">
                     Winning bid: $@Convert.ToDecimal(obj.MaxBid).ToString("#,##0.00")
                 </div>
-                <div class="alert alert-warning" role="alert">
+                <div class="alert alert-success" role="alert">
                     Highest Bid: $@Convert.ToDecimal(obj.CurrentBid).ToString("#,##0.00")
                 </div>
-                <div class="alert alert-info" role="alert">
-                    Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")
-                </div>              
+
+                @if (obj.UserLastBid == obj.CurrentBid)
+                {
+                    <div class="alert alert-success" role="alert">
+                        Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger" role="alert">
+                        Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")
+                    </div>
+                }
+
 
             </div>
         </div>

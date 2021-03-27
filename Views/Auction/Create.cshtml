@@ -32,7 +32,7 @@
                                 @for (int i = 2; i <= 9; i++)
                                 {
 
-                                    <option value="@i">@i Day</option>
+                                    <option value="@i">@i Days</option>
                                 }
 
                             </select>
@@ -190,7 +190,7 @@
             });
             function fillTypes(types) {
                 $('#carTypes').empty();
-                $('#carTypes').append('<option>Choose a car model</option>');
+                $('#carTypes').append('<option value="">Choose a car model</option>');
 
                 var options = '';
                 for (var i = 0; i < types.length; i++) {

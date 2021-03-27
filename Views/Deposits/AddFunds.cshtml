@@ -18,25 +18,26 @@
             {
                 <p>You currently dont have any funds deposited.</p>
             }
-            <form enctype="multipart/form-data" asp-action="AddFunds">
-                <input asp-for="Balance" hidden/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label asp-for="Amount"></label>
-                            <input asp-for="Amount" class="form-control" placeholder="Please enter the amount">
-                            <span asp-validation-for="Amount" class="text-danger"></span>
-                        </div>
+        <form enctype="multipart/form-data" asp-action="AddFunds">
+            <input asp-for="Balance" hidden />
+            <span asp-validation-for="Balance" class="text-success"></span>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="Amount"></label>
+                        <input asp-for="Amount" class="form-control" placeholder="Please enter the amount">
+                        <span asp-validation-for="Amount" class="text-danger"></span>
                     </div>
                 </div>
-                <br />
-                <div class="form-group">
-                    <input type="submit" value="Add funds   " class="btn btn-success text-uppercase" />
-                    <a asp-action="Index" asp-controller="Auction" class="btn btn-danger ">Cancel</a>
-                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Add funds   " class="btn btn-success text-uppercase" />
+                <a asp-action="Index" asp-controller="Auction" class="btn btn-danger ">Cancel</a>
+            </div>
 
 
-            </form>
+        </form>
             <p>
 
             </p>

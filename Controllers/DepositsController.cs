@@ -41,19 +41,33 @@ namespace Auctioneer.Controllers
         [HttpPost]
         public IActionResult AddFunds(DepositsViewModel model)
         {
-            if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
+            if (ModelState.IsValid)
             {
-                Deposits balance = _db.Deposits.Where(b => b.UserID == User.Identity.Name).FirstOrDefault();
-                balance.Balance += model.Amount;
+                if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
+                {
+                    Deposits balance = _db.Deposits.Where(b => b.UserID == User.Identity.Name).FirstOrDefault();
+                    balance.Balance += model.Amount;
+                }
+                else
+                {
+                    Deposits newDeposit = new();
+                    newDeposit.Balance = model.Amount;
+                    newDeposit.UserID = User.Identity.Name;
+                    _db.Deposits.Add(newDeposit);
+                }
+                _db.SaveChanges();
+
+                if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
+                {
+                    model.Balance = _db.Deposits.FirstOrDefault(x => x.UserID == User.Identity.Name).Balance;
+                }
+                else
+                {
+                    model.Balance = 0;
+                }
+                ModelState.AddModelError("Balance", "The amount has been added to your account balance!");
+                return View(model);
             }
-            else
-            {
-                Deposits newDeposit = new();
-                newDeposit.Balance = model.Amount;
-                newDeposit.UserID = User.Identity.Name;
-                _db.Deposits.Add(newDeposit);
-            }
-            _db.SaveChanges();
 
             if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
             {
@@ -64,6 +78,14 @@ namespace Auctioneer.Controllers
                 model.Balance = 0;
             }
             return View(model);
+        }
+
+
+
+        public ActionResult GetAccountBalance()
+        {
+            var Balance = _db.Deposits.FirstOrDefault(x => x.UserID == User.Identity.Name).Balance;
+            return PartialView("Balance", Balance);
         }
     }
 }

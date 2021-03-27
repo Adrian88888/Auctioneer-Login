@@ -76,6 +76,11 @@ namespace Auctioneer.Controllers
             }
             return View(model);
         }
+
+
+
+
+
         public IActionResult MyAuctions()
         {
             List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
@@ -118,6 +123,10 @@ namespace Auctioneer.Controllers
             return View(model);
         }
 
+
+
+
+
         [AllowAnonymous]
         public IActionResult ExpiredAuctions()
         {
@@ -155,6 +164,11 @@ namespace Auctioneer.Controllers
             }
             return View(model);
         }
+
+
+
+
+
         public IActionResult Create()
         {
            List<CarBrand> carBrands = _db.CarBrand.ToList();
@@ -187,6 +201,9 @@ namespace Auctioneer.Controllers
 
             return View(model);
         }
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(AuctionViewModel auctionViewModel)
@@ -229,9 +246,7 @@ namespace Auctioneer.Controllers
                 return RedirectToAction("Index");
             }
             List<CarBrand> carBrands = _db.CarBrand.ToList();
-            List<CarType> carTypes = _db.CarType.ToList();
             auctionViewModel.Brands = new List<CarBrandViewModel>();
-            auctionViewModel.Types = new List<CarTypeViewModel>();
 
             foreach (var carBrand in carBrands)
             {
@@ -242,16 +257,16 @@ namespace Auctioneer.Controllers
                 };
                 auctionViewModel.Brands.Add(carBrandViewModel);
             }
-            foreach (var carType in carTypes)
-            {
-                var carTypeViewModel = new CarTypeViewModel
-                {
-                    CarTypeID = carType.CarTypeID,
-                    Type = carType.Type,
-                    CarBrandID = carType.CarBrandID
-                };
-                auctionViewModel.Types.Add(carTypeViewModel);
-            }
+            //foreach (var carType in carTypes)
+            //{
+            //    var carTypeViewModel = new CarTypeViewModel
+            //    {
+            //        CarTypeID = carType.CarTypeID,
+            //        Type = carType.Type,
+            //        CarBrandID = carType.CarBrandID
+            //    };
+            //    auctionViewModel.Types.Add(carTypeViewModel);
+            //}
            return View(auctionViewModel);
         }
         public ActionResult GetTypesByBrand(int id)

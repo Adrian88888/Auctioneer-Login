@@ -99,11 +99,18 @@ namespace Auctioneer.Controllers
                     model.AuctionOwner = auction.AuctionOwner;
                     model.AuctionWinner = auction.AuctionWinner;
 
-                    if (_db.Bids.Any(d => d.UserID == User.Identity.Name) && _db.Bids.Any(b => b.AuctionID == auction.AuctionID))
+                    Bids userBid = _db.Bids.Where(b => b.UserID == User.Identity.Name).Where(b => b.AuctionID == auction.AuctionID).FirstOrDefault();
+                    
+                    if (userBid == null)
+
                     {
-                        Bids userBid = _db.Bids.Where(b => b.UserID == User.Identity.Name).Where(b => b.AuctionID == auction.AuctionID).FirstOrDefault();
+                        model.UserLastBid = 0;
+                    }
+                    else
+                    {
                         model.UserLastBid = userBid.Amount;
-                    }                      
+                    }
+
                     return View(model);
                 }
             }
