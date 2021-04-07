@@ -92,7 +92,7 @@
                     Highest Bid: $@Convert.ToDecimal(obj.CurrentBid).ToString("#,##0.00")
                 </div>
 
-                @if (obj.UserLastBid == obj.CurrentBid)
+                @if (obj.AuctionWinner == User.Identity.Name)
                 {
                     <div class="alert alert-success" role="alert">
                         Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")

@@ -60,6 +60,7 @@ namespace Auctioneer.ViewModels
         public List<CarTypeViewModel> Types { get; set; }
         public Gallery Image { get; set; }
         public List<Gallery> Images { get; set; }
-        
+        public List<CarFeatures> Features { get; set; }
+        public List<int> Checked { get; set; }
     }
 }

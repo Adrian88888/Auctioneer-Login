@@ -20,5 +20,7 @@ namespace Auctioneer.Data
         public DbSet<Gallery> Gallery { get; set; }
         public DbSet<Bids> Bids { get; set; }
         public DbSet<Deposits> Deposits { get; set; }
+        public DbSet<CarFeatures> CarFeatures { get; set; }
+        public DbSet<AuctionCarFeatures> AuctionCarFeatures { get; set; }
     }
 }

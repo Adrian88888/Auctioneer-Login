@@ -173,10 +173,13 @@ namespace Auctioneer.Controllers
         {
            List<CarBrand> carBrands = _db.CarBrand.ToList();
            List<CarType> carTypes = _db.CarType.ToList();
+           List<CarFeatures> carFeatures = _db.CarFeatures.ToList();
+
             AuctionViewModel model = new()
             {
                 Brands = new List<CarBrandViewModel>(),
-                Types = new List<CarTypeViewModel>()
+                Types = new List<CarTypeViewModel>(),
+                Features = new List<CarFeatures>()
             };
 
             foreach ( var carBrand in carBrands)
@@ -197,6 +200,10 @@ namespace Auctioneer.Controllers
                     CarBrandID = carType.CarBrandID
                 };
                 model.Types.Add(carTypeViewModel);
+            }
+            foreach (var carFeature in carFeatures)
+            {
+                model.Features.Add(carFeature);
             }
 
             return View(model);
@@ -229,8 +236,26 @@ namespace Auctioneer.Controllers
                         auction.Gallery.Add(gallery);
                     }
                 }
+                //save car features
+                if (auctionViewModel.Features != null && auctionViewModel.Features.Count > 0)
+                {
+                    auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
+
+                    foreach (var feature in auctionViewModel.Features)
+                    {
+                        if (feature.IsSelected)
+                        {
+                            var auctionCarFeature = new AuctionCarFeatures
+                            {
+                                CarFeaturesID = feature.CarFeatureID
+
+                            };
+                            auction.AuctionCarFeatures.Add(auctionCarFeature);
+                        }
+                    }
+                }
                 //insert the record to database
-                
+
                 auction.Duration = (int)auctionViewModel.Duration;
                 auction.Title = auctionViewModel.Title;
                 auction.Description = auctionViewModel.Description;
@@ -241,9 +266,11 @@ namespace Auctioneer.Controllers
                 auction.CreationDate = DateTime.Now;
                 auction.AuctionOwner = User.Identity.Name;
                 auction.AuctionWinner = "None";
+
+
                 _db.Auction.Add(auction);
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Display", new { id = auction.AuctionID });
             }
             List<CarBrand> carBrands = _db.CarBrand.ToList();
             auctionViewModel.Brands = new List<CarBrandViewModel>();
@@ -257,17 +284,15 @@ namespace Auctioneer.Controllers
                 };
                 auctionViewModel.Brands.Add(carBrandViewModel);
             }
-            //foreach (var carType in carTypes)
-            //{
-            //    var carTypeViewModel = new CarTypeViewModel
-            //    {
-            //        CarTypeID = carType.CarTypeID,
-            //        Type = carType.Type,
-            //        CarBrandID = carType.CarBrandID
-            //    };
-            //    auctionViewModel.Types.Add(carTypeViewModel);
-            //}
-           return View(auctionViewModel);
+            List<CarFeatures> carFeatures = _db.CarFeatures.ToList();
+            auctionViewModel.Features = new List<CarFeatures>();
+
+            foreach (var carFeature in carFeatures)
+            {
+                auctionViewModel.Features.Add(carFeature);
+            }
+
+            return View(auctionViewModel);
         }
         public ActionResult GetTypesByBrand(int id)
         {
@@ -282,7 +307,7 @@ namespace Auctioneer.Controllers
                 return NotFound();
             }
 
-            var auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery);
+            var auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).Include(d => d.AuctionCarFeatures);
             var model = new AuctionViewModel();
 
             foreach (var auction in auctions)
@@ -298,14 +323,19 @@ namespace Auctioneer.Controllers
                     model.CurrentBid = auction.CurrentBid;
                     model.Brand = auction.CarBrand.Brand;
                     model.Type = auction.CarType.Type;
-                    model.Images = new List<Gallery>();
-                    List<Gallery> images = auction.Gallery;
+                    model.Images = auction.Gallery;
+                    model.Title = auction.Title;
+                    model.Features = new();
 
-                    foreach (var image in images)
+                    List<AuctionCarFeatures> auctionCarFeatures = auction.AuctionCarFeatures;
+
+                    foreach (var auctionCarFeature in auctionCarFeatures)
                     {
-                        model.Images.Add(image);
-                        model.Image = image;
+                        var feature = _db.CarFeatures.Where(x => x.CarFeatureID == auctionCarFeature.CarFeaturesID).FirstOrDefault();
+                        model.Features.Add(feature);
+
                     }
+
                     List<Bids> bids = _db.Bids.ToList();
                     foreach (var bid in bids)
                     {

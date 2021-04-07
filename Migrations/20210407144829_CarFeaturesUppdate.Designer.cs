@@ -4,14 +4,16 @@ using Auctioneer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Auctioneer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210407144829_CarFeaturesUppdate")]
+    partial class CarFeaturesUppdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,15 +77,13 @@ namespace Auctioneer.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AuctionID")
+                    b.Property<int>("AuctionID")
                         .HasColumnType("int");
 
                     b.Property<int>("CarFeaturesID")
                         .HasColumnType("int");
 
                     b.HasKey("AuctionCarFeaturesID");
-
-                    b.HasIndex("AuctionID");
 
                     b.ToTable("AuctionCarFeatures");
                 });
@@ -417,13 +417,6 @@ namespace Auctioneer.Migrations
                     b.Navigation("CarType");
                 });
 
-            modelBuilder.Entity("Auctioneer.Models.AuctionCarFeatures", b =>
-                {
-                    b.HasOne("Auctioneer.Models.Auction", null)
-                        .WithMany("AuctionCarFeatures")
-                        .HasForeignKey("AuctionID");
-                });
-
             modelBuilder.Entity("Auctioneer.Models.Gallery", b =>
                 {
                     b.HasOne("Auctioneer.Models.Auction", null)
@@ -484,8 +477,6 @@ namespace Auctioneer.Migrations
 
             modelBuilder.Entity("Auctioneer.Models.Auction", b =>
                 {
-                    b.Navigation("AuctionCarFeatures");
-
                     b.Navigation("Gallery");
                 });
 #pragma warning restore 612, 618

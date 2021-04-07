@@ -6,7 +6,7 @@
 <div class="container p-3">
     <div class="row pt-4">
         <div class="col-md-6">
-            <h2 class="text-dark"> Details </h2>
+            <h2 class="text-dark"> @Model.Title </h2>
         </div>
 
         <div class="col-md-6">
@@ -27,7 +27,6 @@
         <div class="row">
 
             <div class="col-md-8">
-                @*<img class="img-fluid" src="@("~/Image/"+Model.ImageName)" asp-append-version="true" width="700px" height="700px" alt="">*@
                 <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
@@ -40,12 +39,6 @@
                         <div class="carousel-item active">
                             <img class="d-block w-100" src="@("~/Image/"+Model.Images.FirstOrDefault().ImageName)" asp-append-version="true" style="width:500px; height:500px" alt="">
                         </div>
-                        @*@foreach (var image in Model.Images)
-                            {
-                                <div class="carousel-item">
-                                    <img class="d-block w-100" src="@("~/Image/"+image.ImageName)" asp-append-version="true" width="500px" height="500px" alt="">
-                                </div>
-                            }*@
                         @for (var i = 1; i < Model.Images.Count; i++)
                         {
                             <div class="carousel-item">
@@ -97,41 +90,18 @@
         </div>
         <div>
             <h3>Car Features</h3>
-
+            @if (Model.Features.Count > 0)
+            {
+                foreach (var feature in Model.Features)
+                {
+                    <p>@feature.CarFeature</p>
+                }
+            }
+            else
+            {
+                <p>No features info available.</p>
+            }
         </div>
-        <!-- /.row -->
-        <!-- Related Projects Row -->
-        <h3 class="my-4">Similar auctions</h3>
-
-        <div class="row">
-
-            <div class="col-md-3 col-sm-6 mb-4">
-                <a href="#">
-                    <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-                </a>
-            </div>
-
-            <div class="col-md-3 col-sm-6 mb-4">
-                <a href="#">
-                    <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-                </a>
-            </div>
-
-            <div class="col-md-3 col-sm-6 mb-4">
-                <a href="#">
-                    <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-                </a>
-            </div>
-
-            <div class="col-md-3 col-sm-6 mb-4">
-                <a href="#">
-                    <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-                </a>
-            </div>
-
-        </div>
-        <!-- /.row -->
-
     </div>
     <!-- /.container -->
 </div>
