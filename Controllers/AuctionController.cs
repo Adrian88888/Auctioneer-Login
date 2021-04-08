@@ -4,6 +4,7 @@ using Auctioneer.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,14 +18,16 @@ namespace Auctioneer.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AuctionController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment)
+        public AuctionController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment, UserManager<IdentityUser> userManager)
         {
             _db = db;
             this._hostEnvironment = hostEnvironment;
+            _userManager = userManager;
         }
         [AllowAnonymous]
-        public IActionResult Index()
+        public async System.Threading.Tasks.Task<IActionResult> IndexAsync()
         {
             List<Auction>  auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
             AuctionsViewModel model = new()
@@ -59,14 +62,26 @@ namespace Auctioneer.Controllers
                 auctionViewModel.CurrentBid = auction.CurrentBid;
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
-                auctionViewModel.AuctionOwner = auction.AuctionOwner;
-                auctionViewModel.AuctionWinner = auction.AuctionWinner;
 
+                var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
+                auctionViewModel.AuctionOwner = user.UserName;
+                if (auction.AuctionWinnerID == "None")
+                {
+                    auctionViewModel.AuctionWinner = "None";
+                }
+                else
+                {
+                    user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
+                    auctionViewModel.AuctionWinner = user.UserName;
+                }
                 //load user last bid
                 List<Bids> bids = _db.Bids.ToList();
+
+                var userID = _userManager.GetUserId(User);
+
                 foreach (var bid in bids)
                 {
-                    if (bid.UserID == User.Identity.Name && bid.AuctionID == auction.AuctionID)
+                    if (bid.UserID == userID && bid.AuctionID == auction.AuctionID)
                     {
                         auctionViewModel.UserLastBid = bid.Amount;
                     }
@@ -81,8 +96,9 @@ namespace Auctioneer.Controllers
 
 
 
-        public IActionResult MyAuctions()
+        public async System.Threading.Tasks.Task<IActionResult> MyAuctionsAsync()
         {
+            var userID = _userManager.GetUserId(User);
             List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
             AuctionsViewModel model = new()
             {
@@ -92,7 +108,7 @@ namespace Auctioneer.Controllers
 
             foreach (var auction in auctions)
             {
-                if (auction.AuctionOwner == User.Identity.Name)
+                if (auction.AuctionOwnerID == userID)
                 { 
                     var auctionViewModel = new AuctionViewModel
                     {
@@ -115,9 +131,19 @@ namespace Auctioneer.Controllers
                 auctionViewModel.CurrentBid = auction.CurrentBid;
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
-                auctionViewModel.AuctionOwner = auction.AuctionOwner;
-                auctionViewModel.AuctionWinner = auction.AuctionWinner;
-                model.Auctions.Add(auctionViewModel);
+                    var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
+                 auctionViewModel.AuctionOwner = user.UserName;
+                    if (auction.AuctionWinnerID == "None")
+                    {
+                        auctionViewModel.AuctionWinner = "None";
+                    }
+                    else
+                    {
+                        user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
+                        auctionViewModel.AuctionWinner = user.UserName;
+                    }
+
+                    model.Auctions.Add(auctionViewModel);
             }
             }
             return View(model);
@@ -128,7 +154,7 @@ namespace Auctioneer.Controllers
 
 
         [AllowAnonymous]
-        public IActionResult ExpiredAuctions()
+        public async System.Threading.Tasks.Task<IActionResult> ExpiredAuctionsAsync()
         {
             List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
             AuctionsViewModel model = new()
@@ -158,8 +184,19 @@ namespace Auctioneer.Controllers
                 auctionViewModel.Brand = auction.CarBrand.Brand;
                 auctionViewModel.Type = auction.CarType.Type;
                 auctionViewModel.Title = auction.Title;
-                auctionViewModel.AuctionOwner = auction.AuctionOwner;
-                auctionViewModel.AuctionWinner = auction.AuctionWinner;
+                var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
+                auctionViewModel.AuctionOwner = user.UserName;
+                user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
+                if (auction.AuctionWinnerID == "None")
+                {
+                    auctionViewModel.AuctionWinner = "None";
+                }
+                else
+                {
+                    user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
+                    auctionViewModel.AuctionWinner = user.UserName;
+                }
+
                 model.Auctions.Add(auctionViewModel);
             }
             return View(model);
@@ -264,8 +301,8 @@ namespace Auctioneer.Controllers
                 auction.CarBrandID = (int)auctionViewModel.CarBrandID;
                 auction.CarTypeID = (int)auctionViewModel.CarTypeID;
                 auction.CreationDate = DateTime.Now;
-                auction.AuctionOwner = User.Identity.Name;
-                auction.AuctionWinner = "None";
+                auction.AuctionOwnerID = _userManager.GetUserId(User);
+                auction.AuctionWinnerID = "None";
 
 
                 _db.Auction.Add(auction);
@@ -337,9 +374,10 @@ namespace Auctioneer.Controllers
                     }
 
                     List<Bids> bids = _db.Bids.ToList();
+                    var userID = _userManager.GetUserId(User);
                     foreach (var bid in bids)
                     {
-                        if (bid.UserID == User.Identity.Name && bid.AuctionID == auction.AuctionID)
+                        if (bid.UserID == userID && bid.AuctionID == auction.AuctionID)
                         {
                             model.UserLastBid = bid.Amount;
                         }

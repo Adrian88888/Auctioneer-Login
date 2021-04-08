@@ -1,6 +1,7 @@
 ﻿using Auctioneer.Data;
 using Auctioneer.Models;
 using Auctioneer.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,11 @@ namespace Auctioneer.Controllers
     public class DepositsController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public DepositsController(ApplicationDbContext db)
+        private readonly UserManager<IdentityUser> _userManager;
+        public DepositsController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
 
 
@@ -22,10 +25,11 @@ namespace Auctioneer.Controllers
         public IActionResult AddFunds()
         {
             DepositsViewModel model = new();
+            var userID = _userManager.GetUserId(User);
 
-            if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
+            if (_db.Deposits.Any(d => d.UserID == userID))
             {
-                model.Balance = _db.Deposits.FirstOrDefault(x => x.UserID == User.Identity.Name).Balance;
+                model.Balance = _db.Deposits.FirstOrDefault(x => x.UserID == userID).Balance;
             }
             else
             {
@@ -41,25 +45,28 @@ namespace Auctioneer.Controllers
         [HttpPost]
         public IActionResult AddFunds(DepositsViewModel model)
         {
+            var userID = _userManager.GetUserId(User);
             if (ModelState.IsValid)
             {
-                if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
+                
+
+                if (_db.Deposits.Any(d => d.UserID == userID))
                 {
-                    Deposits balance = _db.Deposits.Where(b => b.UserID == User.Identity.Name).FirstOrDefault();
+                    Deposits balance = _db.Deposits.Where(b => b.UserID == userID).FirstOrDefault();
                     balance.Balance += model.Amount;
                 }
                 else
                 {
                     Deposits newDeposit = new();
                     newDeposit.Balance = model.Amount;
-                    newDeposit.UserID = User.Identity.Name;
+                    newDeposit.UserID = userID;
                     _db.Deposits.Add(newDeposit);
                 }
                 _db.SaveChanges();
 
-                if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
+                if (_db.Deposits.Any(d => d.UserID == userID))
                 {
-                    model.Balance = _db.Deposits.FirstOrDefault(x => x.UserID == User.Identity.Name).Balance;
+                    model.Balance = _db.Deposits.FirstOrDefault(x => x.UserID == userID).Balance;
                 }
                 else
                 {
@@ -69,9 +76,9 @@ namespace Auctioneer.Controllers
                 return View(model);
             }
 
-            if (_db.Deposits.Any(d => d.UserID == User.Identity.Name))
+            if (_db.Deposits.Any(d => d.UserID == userID))
             {
-                model.Balance = _db.Deposits.FirstOrDefault(x => x.UserID == User.Identity.Name).Balance;
+                model.Balance = _db.Deposits.FirstOrDefault(x => x.UserID == userID).Balance;
             }
             else
             {
@@ -84,7 +91,8 @@ namespace Auctioneer.Controllers
 
         public ActionResult GetAccountBalance()
         {
-            var Balance = _db.Deposits.FirstOrDefault(x => x.UserID == User.Identity.Name).Balance;
+            var userID = _userManager.GetUserId(User);
+            var Balance = _db.Deposits.FirstOrDefault(x => x.UserID == userID).Balance;
             return PartialView("Balance", Balance);
         }
     }

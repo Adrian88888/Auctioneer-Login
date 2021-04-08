@@ -17,8 +17,8 @@ namespace Auctioneer.Models
         }
         [Key]
         public int AuctionID { get; set; }
-        public string AuctionOwner { get; set; }
-        public string AuctionWinner { get; set; }
+        public string AuctionOwnerID { get; set; }
+        public string AuctionWinnerID { get; set; }
         public int Duration { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
