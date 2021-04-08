@@ -52,15 +52,13 @@ namespace Auctioneer.ViewModels
         public int? CarBrandID { get; set; }
         public string Brand { get; set; }
 
-        public List<CarBrandViewModel> Brands { get; set; }
+        public List<CarBrand> Brands { get; set; }
         [DisplayName("Car Model")]
         [Required(ErrorMessage = "Car model is required")]
         public int? CarTypeID { get; set; }
         public string Type { get; set; }
-        public List<CarTypeViewModel> Types { get; set; }
         public Gallery Image { get; set; }
         public List<Gallery> Images { get; set; }
         public List<CarFeatures> Features { get; set; }
-        public List<int> Checked { get; set; }
     }
 }

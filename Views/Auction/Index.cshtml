@@ -11,7 +11,7 @@
         function countdown() {
             if (--timeLeft > 0) {
                 update();
-            } 
+            }
         }
 
         function update() {
@@ -37,83 +37,78 @@
     @if (Model.Auctions.Count() > 0)
     {
         <div class="container mt-5 mb-5">
-<div class="d-flex justify-content-center row">
-    <div class="col-md-12">
-        @foreach (var obj in Model.Auctions)
+            <div class="d-flex justify-content-center row">
+                <div class="col-md-12">
+                    @foreach (var obj in Model.Auctions)
 
                     {
                         TimeSpan timeRemaining = new TimeSpan(obj.ExpiryDate.Ticks - DateTime.Now.Ticks);
-        @if (timeRemaining.TotalSeconds > 0)
-                        {
-        <div class="row p-1 bg-white border rounded">
-            <div class="col-md-4 mt-2">
-                <img class="rounded" style="width:295px"src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true">
-                <div class="alert col-md-11 mt-1 alert-primary" role="alert">
-                    Owner: @obj.AuctionOwner
-                </div>
-                @if (obj.AuctionWinner == User.Identity.Name)
-                {
-                    <div class="alert col-md-11 mt-1 alert-success" role="alert">
-                        Highest bid: @obj.AuctionWinner
-                    </div>
-                }
-                else
-                {
-                    <div class="alert col-md-11 mt-1 alert-danger" role="alert">
-                        Highest bid: @obj.AuctionWinner
-                    </div>
-                }
-                @*<p class="text-info font-weight-bold mt-3">Owner: @obj.AuctionOwner </p>*@
-                @*<p class="text-success font-weight-bold">Highest Bid: @obj.AuctionWinner</p>*@
-            </div>
-            <div class="col-md-4 border-left mt-2">
-                <h5>@obj.Brand @obj.Type</h5>
-                <p class="text-info">@obj.Title</p>
+                        <div class="row p-1 bg-white border rounded">
+                            <div class="col-md-4 mt-2">
+                                <img class="rounded" style="width:295px" src="@("~/Image/" + obj.Image.ImageName)" asp-append-version="true">
+                                <div class="alert col-md-11 mt-1 alert-primary" role="alert">
+                                    Owner: @obj.AuctionOwner
+                                </div>
+                                @if (obj.AuctionWinner == User.Identity.Name)
+                                {
+                                    <div class="alert col-md-11 mt-1 alert-success" role="alert">
+                                        Highest bid: @obj.AuctionWinner
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert col-md-11 mt-1 alert-danger" role="alert">
+                                        Highest bid: @obj.AuctionWinner
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-4 border-left mt-2">
+                                <h5>@obj.Brand @obj.Type</h5>
+                                <p class="text-info">@obj.Title</p>
 
-                    <p class="text-danger">Expiry Date: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
-                    <p class="text-success font-weight-bold">
-                        Time remaining: <span id="@("time-left" + obj.AuctionID)"></span>
-                        <script>
+                                <p class="text-danger">Expiry Date: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
+                                <p class="text-success font-weight-bold">
+                                    Time remaining: <span id="@("time-left" + obj.AuctionID)"></span>
+                                    <script>
                                 startCountdown(@timeRemaining.TotalSeconds, '@("time-left" + obj.AuctionID)');
-                        </script>
-                        <div class="align-bottom">
-                            <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
-                            <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@obj.AuctionID">Place bid</a>
+                                    </script>
+                                    <div class="align-bottom">
+                                        <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
+                                        <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@obj.AuctionID">Place bid</a>
+                                    </div>
+                            </div>
+                            <div class="col-md-4 border-left mt-2">
+                                <div class="alert alert-primary" role="alert">
+                                    Starting bid: $@Convert.ToDecimal(obj.MinBid).ToString("#,##0.00")
+                                </div>
+                                <div class="alert alert-primary" role="alert">
+                                    Winning bid: $@Convert.ToDecimal(obj.MaxBid).ToString("#,##0.00")
+                                </div>
+                                <div class="alert alert-success" role="alert">
+                                    Highest Bid: $@Convert.ToDecimal(obj.CurrentBid).ToString("#,##0.00")
+                                </div>
+
+                                @if (obj.AuctionWinner == User.Identity.Name)
+                                {
+                                    <div class="alert alert-success" role="alert">
+                                        Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")
+                                    </div>
+                                }
+
+
+                            </div>
                         </div>
-            </div>
-            <div class="col-md-4 border-left mt-2">
-                <div class="alert alert-primary" role="alert">
-                    Starting bid: $@Convert.ToDecimal(obj.MinBid).ToString("#,##0.00")
+                        <br />
+                    }
                 </div>
-                <div class="alert alert-primary" role="alert">
-                    Winning bid: $@Convert.ToDecimal(obj.MaxBid).ToString("#,##0.00")
-                </div>
-                <div class="alert alert-success" role="alert">
-                    Highest Bid: $@Convert.ToDecimal(obj.CurrentBid).ToString("#,##0.00")
-                </div>
-
-                @if (obj.AuctionWinner == User.Identity.Name)
-                {
-                    <div class="alert alert-success" role="alert">
-                        Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")
-                    </div>
-                }
-                else
-                {
-                    <div class="alert alert-danger" role="alert">
-                        Your last bid: $@Convert.ToDecimal(obj.UserLastBid).ToString("#,##0.00")
-                    </div>
-                }
-
-
             </div>
         </div>
-        <br />
-    }
-}
-    </div>
-</div>
-</div>
     }
     else
     {

@@ -29,219 +29,74 @@ namespace Auctioneer.Controllers
         [AllowAnonymous]
         public async System.Threading.Tasks.Task<IActionResult> IndexAsync()
         {
-            List<Auction>  auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
-            AuctionsViewModel model = new()
+            AuctionsViewModel model = new();
+            model.Auctions = new List<AuctionViewModel>();
+
+            Builder builder = new();
+            var auctions = builder.GetAllAuctions(_db);
+
+            foreach (var auction in auctions)
             {
-                Auctions = new List<AuctionViewModel>()
-            };
+                if (auction.ExpiryDate > DateTime.Now)
+                {
+                    AuctionViewModel auctionViewModel = await builder.AuctionModelToVMAsync(auction, _userManager);
+                    //load user last bid
+                    var userID = _userManager.GetUserId(User);
+                    auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, auction.AuctionID);
+                    model.Auctions.Add(auctionViewModel);
+                }
+            }
+            return View(model);
+        }
 
-
-            foreach ( var auction in auctions )
+        public async System.Threading.Tasks.Task<IActionResult> MyAuctionsAsync()
+        {
+            Builder builder = new();
+            AuctionsViewModel model = new();
+            model.Auctions = new List<AuctionViewModel>();
+            var userID = _userManager.GetUserId(User);
+            var userAuctions = builder.GetAuctionsByOwnerID(_db, userID);
+            foreach (var userAuction in userAuctions)
             {
-                var auctionViewModel = new AuctionViewModel
-                {
-                    Images = new List<Gallery>()
-                };
-
-                //load auction images from Gallery 
-                List<Gallery> images = auction.Gallery;
-
-                foreach ( var image in images )
-                {
-                    auctionViewModel.Images.Add(image);
-                    auctionViewModel.Image = image;
-                }
-                //load auction details from database
-                auctionViewModel.AuctionID = auction.AuctionID;
-                auctionViewModel.Title = auction.Title;
-                auctionViewModel.Description = auction.Description;
-                auctionViewModel.CreationDate = auction.CreationDate;
-                auctionViewModel.Duration = auction.Duration;
-                auctionViewModel.MaxBid = auction.MaxBid;
-                auctionViewModel.MinBid = auction.MinBid;
-                auctionViewModel.CurrentBid = auction.CurrentBid;
-                auctionViewModel.Brand = auction.CarBrand.Brand;
-                auctionViewModel.Type = auction.CarType.Type;
-
-                var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
-                auctionViewModel.AuctionOwner = user.UserName;
-                if (auction.AuctionWinnerID == "None")
-                {
-                    auctionViewModel.AuctionWinner = "None";
-                }
-                else
-                {
-                    user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
-                    auctionViewModel.AuctionWinner = user.UserName;
-                }
-                //load user last bid
-                List<Bids> bids = _db.Bids.ToList();
-
-                var userID = _userManager.GetUserId(User);
-
-                foreach (var bid in bids)
-                {
-                    if (bid.UserID == userID && bid.AuctionID == auction.AuctionID)
-                    {
-                        auctionViewModel.UserLastBid = bid.Amount;
-                    }
-                }
-
+                AuctionViewModel auctionViewModel = await builder.AuctionModelToVMAsync(userAuction, _userManager);
+                auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, userAuction.AuctionID);
                 model.Auctions.Add(auctionViewModel);
             }
             return View(model);
         }
-
-
-
-
-
-        public async System.Threading.Tasks.Task<IActionResult> MyAuctionsAsync()
-        {
-            var userID = _userManager.GetUserId(User);
-            List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
-            AuctionsViewModel model = new()
-            {
-                Auctions = new List<AuctionViewModel>()
-            };
-
-
-            foreach (var auction in auctions)
-            {
-                if (auction.AuctionOwnerID == userID)
-                { 
-                    var auctionViewModel = new AuctionViewModel
-                    {
-                        Images = new List<Gallery>()
-                    };
-                List<Gallery> images = auction.Gallery;
-
-                foreach (var image in images)
-                {
-                    auctionViewModel.Images.Add(image);
-                    auctionViewModel.Image = image;
-                }
-                auctionViewModel.AuctionID = auction.AuctionID;
-                auctionViewModel.Title = auction.Title;
-                auctionViewModel.Description = auction.Description;
-                auctionViewModel.CreationDate = auction.CreationDate;
-                auctionViewModel.Duration = auction.Duration;
-                auctionViewModel.MaxBid = auction.MaxBid;
-                auctionViewModel.MinBid = auction.MinBid;
-                auctionViewModel.CurrentBid = auction.CurrentBid;
-                auctionViewModel.Brand = auction.CarBrand.Brand;
-                auctionViewModel.Type = auction.CarType.Type;
-                    var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
-                 auctionViewModel.AuctionOwner = user.UserName;
-                    if (auction.AuctionWinnerID == "None")
-                    {
-                        auctionViewModel.AuctionWinner = "None";
-                    }
-                    else
-                    {
-                        user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
-                        auctionViewModel.AuctionWinner = user.UserName;
-                    }
-
-                    model.Auctions.Add(auctionViewModel);
-            }
-            }
-            return View(model);
-        }
-
-
-
 
 
         [AllowAnonymous]
         public async System.Threading.Tasks.Task<IActionResult> ExpiredAuctionsAsync()
         {
-            List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
-            AuctionsViewModel model = new()
-            {
-                Auctions = new List<AuctionViewModel>()
-            };
+            AuctionsViewModel model = new();
+            model.Auctions = new List<AuctionViewModel>();
 
+            Builder builder = new();
+            var auctions = builder.GetAllAuctions(_db);
 
             foreach (var auction in auctions)
             {
-                var auctionViewModel = new AuctionViewModel
+                if (auction.ExpiryDate < DateTime.Now)
                 {
-                    Images = new List<Gallery>()
-                };
-                List<Gallery> images = auction.Gallery;
-
-                foreach (var image in images)
-                {
-                    auctionViewModel.Images.Add(image);
-                    auctionViewModel.Image = image;
+                    AuctionViewModel auctionViewModel = await builder.AuctionModelToVMAsync(auction, _userManager);
+                    //load user last bid
+                    var userID = _userManager.GetUserId(User);
+                    auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, auction.AuctionID);
+                    model.Auctions.Add(auctionViewModel);
                 }
-                auctionViewModel.AuctionID = auction.AuctionID;
-                auctionViewModel.CreationDate = auction.CreationDate;
-                auctionViewModel.Duration = auction.Duration;
-                auctionViewModel.MaxBid = auction.MaxBid;
-                auctionViewModel.MinBid = auction.MinBid;
-                auctionViewModel.Brand = auction.CarBrand.Brand;
-                auctionViewModel.Type = auction.CarType.Type;
-                auctionViewModel.Title = auction.Title;
-                var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
-                auctionViewModel.AuctionOwner = user.UserName;
-                user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
-                if (auction.AuctionWinnerID == "None")
-                {
-                    auctionViewModel.AuctionWinner = "None";
-                }
-                else
-                {
-                    user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
-                    auctionViewModel.AuctionWinner = user.UserName;
-                }
-
-                model.Auctions.Add(auctionViewModel);
             }
             return View(model);
         }
 
 
-
-
-
         public IActionResult Create()
         {
-           List<CarBrand> carBrands = _db.CarBrand.ToList();
-           List<CarType> carTypes = _db.CarType.ToList();
-           List<CarFeatures> carFeatures = _db.CarFeatures.ToList();
-
             AuctionViewModel model = new()
             {
-                Brands = new List<CarBrandViewModel>(),
-                Types = new List<CarTypeViewModel>(),
-                Features = new List<CarFeatures>()
+                Brands = _db.CarBrand.ToList(),
+                Features = _db.CarFeatures.ToList()
             };
-
-            foreach ( var carBrand in carBrands)
-            {
-                var carBrandViewModel = new CarBrandViewModel
-                {
-                    CarBrandID = carBrand.CarBrandID,
-                    Brand = carBrand.Brand
-                };
-                model.Brands.Add(carBrandViewModel);            
-            }
-            foreach (var carType in carTypes)
-            {
-                var carTypeViewModel = new CarTypeViewModel
-                {
-                    CarTypeID = carType.CarTypeID,
-                    Type = carType.Type,
-                    CarBrandID = carType.CarBrandID
-                };
-                model.Types.Add(carTypeViewModel);
-            }
-            foreach (var carFeature in carFeatures)
-            {
-                model.Features.Add(carFeature);
-            }
 
             return View(model);
         }
@@ -254,30 +109,22 @@ namespace Auctioneer.Controllers
         {
             if (ModelState.IsValid)
             {
+                Builder builder = new();
                 var auction = new Auction();
-                //save image to wwwroot/image
-                if ( auctionViewModel.ImageFiles != null && auctionViewModel.ImageFiles.Count > 0)
+                auction.Gallery = new List<Gallery>();
+                auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
+
+                if (auctionViewModel.ImageFiles != null && auctionViewModel.ImageFiles.Count > 0)
                 {
-                    auction.Gallery = new List<Gallery>();
-                    
-                    foreach (IFormFile imageFile in auctionViewModel.ImageFiles )
+                    foreach (IFormFile imageFile in auctionViewModel.ImageFiles)
                     {
                         var gallery = new Gallery();
-                       
-                        string wwwRootPath = _hostEnvironment.WebRootPath;
-                string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
-                string extension = Path.GetExtension(imageFile.FileName);
-                gallery.ImageName = fileName = fileName + DateTime.Now.ToString("ddmmyyyy") + extension;
-                string path = Path.Combine(wwwRootPath + "/Image/", fileName);
-                 imageFile.CopyTo(new FileStream(path, FileMode.Create));
+                        gallery.ImageName = builder.SaveImageToFile(_hostEnvironment, imageFile);
                         auction.Gallery.Add(gallery);
                     }
                 }
-                //save car features
                 if (auctionViewModel.Features != null && auctionViewModel.Features.Count > 0)
                 {
-                    auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
-
                     foreach (var feature in auctionViewModel.Features)
                     {
                         if (feature.IsSelected)
@@ -285,7 +132,6 @@ namespace Auctioneer.Controllers
                             var auctionCarFeature = new AuctionCarFeatures
                             {
                                 CarFeaturesID = feature.CarFeatureID
-
                             };
                             auction.AuctionCarFeatures.Add(auctionCarFeature);
                         }
@@ -302,33 +148,14 @@ namespace Auctioneer.Controllers
                 auction.CarTypeID = (int)auctionViewModel.CarTypeID;
                 auction.CreationDate = DateTime.Now;
                 auction.AuctionOwnerID = _userManager.GetUserId(User);
-                auction.AuctionWinnerID = "None";
 
 
                 _db.Auction.Add(auction);
                 _db.SaveChanges();
                 return RedirectToAction("Display", new { id = auction.AuctionID });
             }
-            List<CarBrand> carBrands = _db.CarBrand.ToList();
-            auctionViewModel.Brands = new List<CarBrandViewModel>();
-
-            foreach (var carBrand in carBrands)
-            {
-                var carBrandViewModel = new CarBrandViewModel
-                {
-                    CarBrandID = carBrand.CarBrandID,
-                    Brand = carBrand.Brand
-                };
-                auctionViewModel.Brands.Add(carBrandViewModel);
-            }
-            List<CarFeatures> carFeatures = _db.CarFeatures.ToList();
-            auctionViewModel.Features = new List<CarFeatures>();
-
-            foreach (var carFeature in carFeatures)
-            {
-                auctionViewModel.Features.Add(carFeature);
-            }
-
+            auctionViewModel.Brands = _db.CarBrand.ToList();
+            auctionViewModel.Features = _db.CarFeatures.ToList();
             return View(auctionViewModel);
         }
         public ActionResult GetTypesByBrand(int id)

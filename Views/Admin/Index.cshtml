@@ -1,0 +1,81 @@
+﻿@model Auctioneer.Models.Auction
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<h4>Auction</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="View">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="AuctionID" />
+            <div class="form-group">
+                <label asp-for="AuctionOwnerID" class="control-label"></label>
+                <input asp-for="AuctionOwnerID" class="form-control" />
+                <span asp-validation-for="AuctionOwnerID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AuctionWinnerID" class="control-label"></label>
+                <input asp-for="AuctionWinnerID" class="form-control" />
+                <span asp-validation-for="AuctionWinnerID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration" class="control-label"></label>
+                <input asp-for="Duration" class="form-control" />
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MinBid" class="control-label"></label>
+                <input asp-for="MinBid" class="form-control" />
+                <span asp-validation-for="MinBid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxBid" class="control-label"></label>
+                <input asp-for="MaxBid" class="form-control" />
+                <span asp-validation-for="MaxBid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CurrentBid" class="control-label"></label>
+                <input asp-for="CurrentBid" class="form-control" />
+                <span asp-validation-for="CurrentBid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreationDate" class="control-label"></label>
+                <input asp-for="CreationDate" class="form-control" />
+                <span asp-validation-for="CreationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CarBrandID" class="control-label"></label>
+                <select asp-for="CarBrandID" class="form-control" asp-items="ViewBag.CarBrandID"></select>
+                <span asp-validation-for="CarBrandID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CarTypeID" class="control-label"></label>
+                <select asp-for="CarTypeID" class="form-control" asp-items="ViewBag.CarTypeID"></select>
+                <span asp-validation-for="CarTypeID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
