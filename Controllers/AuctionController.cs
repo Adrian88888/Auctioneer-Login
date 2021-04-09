@@ -40,7 +40,6 @@ namespace Auctioneer.Controllers
                 if (auction.ExpiryDate > DateTime.Now)
                 {
                     AuctionViewModel auctionViewModel = await builder.AuctionModelToVMAsync(auction, _userManager);
-                    //load user last bid
                     var userID = _userManager.GetUserId(User);
                     auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, auction.AuctionID);
                     model.Auctions.Add(auctionViewModel);
@@ -171,46 +170,13 @@ namespace Auctioneer.Controllers
                 return NotFound();
             }
 
-            var auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).Include(d => d.AuctionCarFeatures);
+            Builder builder = new();
             var model = new AuctionViewModel();
+            model = builder.GetAuctionByID(_db, id);
 
-            foreach (var auction in auctions)
-            {
-                if (auction.AuctionID == id)
-                {
-                    model.AuctionID = auction.AuctionID;
-                    model.Duration = auction.Duration;
-                    model.Description = auction.Description;
-                    model.CreationDate = auction.CreationDate;
-                    model.MinBid = auction.MinBid;
-                    model.MaxBid = auction.MaxBid;
-                    model.CurrentBid = auction.CurrentBid;
-                    model.Brand = auction.CarBrand.Brand;
-                    model.Type = auction.CarType.Type;
-                    model.Images = auction.Gallery;
-                    model.Title = auction.Title;
-                    model.Features = new();
+            var userID = _userManager.GetUserId(User);
+            model.UserLastBid = builder.GetUserLastBid(_db, userID, (int)id);
 
-                    List<AuctionCarFeatures> auctionCarFeatures = auction.AuctionCarFeatures;
-
-                    foreach (var auctionCarFeature in auctionCarFeatures)
-                    {
-                        var feature = _db.CarFeatures.Where(x => x.CarFeatureID == auctionCarFeature.CarFeaturesID).FirstOrDefault();
-                        model.Features.Add(feature);
-
-                    }
-
-                    List<Bids> bids = _db.Bids.ToList();
-                    var userID = _userManager.GetUserId(User);
-                    foreach (var bid in bids)
-                    {
-                        if (bid.UserID == userID && bid.AuctionID == auction.AuctionID)
-                        {
-                            model.UserLastBid = bid.Amount;
-                        }
-                    }
-                }
-            }
             return View(model);
         }
     }

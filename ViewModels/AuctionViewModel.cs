@@ -57,8 +57,7 @@ namespace Auctioneer.ViewModels
         [Required(ErrorMessage = "Car model is required")]
         public int? CarTypeID { get; set; }
         public string Type { get; set; }
-        public Gallery Image { get; set; }
-        public List<Gallery> Images { get; set; }
+        public List<Gallery> Gallery { get; set; }
         public List<CarFeatures> Features { get; set; }
     }
 }

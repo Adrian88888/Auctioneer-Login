@@ -30,17 +30,7 @@ namespace Auctioneer.ViewModels
         public async Task<AuctionViewModel> AuctionModelToVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
         {
             AuctionViewModel auctionViewModel = new();
-            auctionViewModel.Images = new List<Gallery>();
-
-            //load auction images from Gallery 
-            List<Gallery> images = auction.Gallery;
-
-            foreach (var image in images)
-            {
-                auctionViewModel.Images.Add(image);
-                auctionViewModel.Image = image;
-            }
-            //load auction details from database
+            auctionViewModel.Gallery = auction.Gallery;
             auctionViewModel.AuctionID = auction.AuctionID;
             auctionViewModel.Title = auction.Title;
             auctionViewModel.Description = auction.Description;
@@ -63,9 +53,6 @@ namespace Auctioneer.ViewModels
             {
                 auctionViewModel.AuctionWinner = "None";
             }
-
-
-
             return auctionViewModel;
         }
 
@@ -83,7 +70,7 @@ namespace Auctioneer.ViewModels
         }
 
         public List<Auction> GetAuctionsByOwnerID(ApplicationDbContext _db, string userID)
-            {
+        {
             List<Auction> userAuctions = new();
             List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
             foreach (var auction in auctions)
@@ -107,6 +94,38 @@ namespace Auctioneer.ViewModels
             return fileName;
         }
 
-        
+        public AuctionViewModel GetAuctionByID(ApplicationDbContext _db, int? id)
+        {
+            var model = new AuctionViewModel();
+            var auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).Include(d => d.AuctionCarFeatures);
+            foreach (var auction in auctions)
+            {
+                if (auction.AuctionID == id)
+                {
+                    model.AuctionID = auction.AuctionID;
+                    model.Duration = auction.Duration;
+                    model.Description = auction.Description;
+                    model.CreationDate = auction.CreationDate;
+                    model.MinBid = auction.MinBid;
+                    model.MaxBid = auction.MaxBid;
+                    model.CurrentBid = auction.CurrentBid;
+                    model.Brand = auction.CarBrand.Brand;
+                    model.Type = auction.CarType.Type;
+                    model.Gallery = auction.Gallery;
+                    model.Title = auction.Title;
+                    model.Features = new();
+
+                    List<AuctionCarFeatures> auctionCarFeatures = auction.AuctionCarFeatures;
+
+                    foreach (var auctionCarFeature in auctionCarFeatures)
+                    {
+                        var feature = _db.CarFeatures.Where(x => x.CarFeatureID == auctionCarFeature.CarFeaturesID).FirstOrDefault();
+                        model.Features.Add(feature);
+
+                    }
+                }
+            }
+            return model;
+        }
     }
 }
