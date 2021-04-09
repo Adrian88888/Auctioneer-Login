@@ -71,7 +71,11 @@
                 <div class="alert alert-info" role="alert">
                     Your last bid: $@Model.UserLastBid
                 </div>
-                <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@Model.AuctionID">Place bid</a>
+                @if (Model.ExpiryDate > DateTime.Now)
+                {
+                    <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@Model.AuctionID">Place bid</a>
+                }
+
 
 
             </div>
@@ -94,7 +98,7 @@
             {
                 foreach (var feature in Model.Features)
                 {
-        <p><i class="far fa-check-circle"></i> &nbsp @feature.CarFeature</p>
+                    <p><i class="far fa-check-circle"></i> &nbsp @feature.CarFeature</p>
                 }
             }
             else

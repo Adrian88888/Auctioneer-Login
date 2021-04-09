@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Auctioneer.Data;
+using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,4 +15,5 @@ namespace Auctioneer.Models
         public int Balance { get; set; }
         public string UserID { get; set; }
     }
+   
 }

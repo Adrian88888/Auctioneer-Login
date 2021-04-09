@@ -42,6 +42,7 @@ namespace Auctioneer.Controllers
                         {
                             AuctionViewModel auctionViewModel = new();
 
+                            auctionViewModel.Gallery = auction.Gallery;
                             auctionViewModel.AuctionID = auction.AuctionID;
                             auctionViewModel.Title = auction.Title;
                             auctionViewModel.Description = auction.Description;

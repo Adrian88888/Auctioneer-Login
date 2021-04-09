@@ -48,7 +48,7 @@ namespace Auctioneer.Controllers
             var userID = _userManager.GetUserId(User);
             if (ModelState.IsValid)
             {
-                
+
 
                 if (_db.Deposits.Any(d => d.UserID == userID))
                 {
@@ -86,14 +86,6 @@ namespace Auctioneer.Controllers
             }
             return View(model);
         }
-
-
-
-        public ActionResult GetAccountBalance()
-        {
-            var userID = _userManager.GetUserId(User);
-            var Balance = _db.Deposits.FirstOrDefault(x => x.UserID == userID).Balance;
-            return PartialView("Balance", Balance);
-        }
     }
 }
+
