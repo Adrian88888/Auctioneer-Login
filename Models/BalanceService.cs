@@ -15,7 +15,11 @@ namespace Auctioneer.Models
         }
         public int GetUserBalance(string userID)
         {
-            var Balance = _db.Deposits.FirstOrDefault(x => x.UserID == userID).Balance;
+            var Balance = 0;
+            if (_db.Deposits.Any(d => d.UserID == userID))
+            {
+                Balance = _db.Deposits.FirstOrDefault(x => x.UserID == userID).Balance;
+            }
             return Balance;
         }
     }

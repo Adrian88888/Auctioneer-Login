@@ -59,5 +59,6 @@ namespace Auctioneer.ViewModels
         public string Type { get; set; }
         public List<Gallery> Gallery { get; set; }
         public List<CarFeatures> Features { get; set; }
+        public List<AuctionCarFeatures> AuctionCarFeatures { get; internal set; }
     }
 }

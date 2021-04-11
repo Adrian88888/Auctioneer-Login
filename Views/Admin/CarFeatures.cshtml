@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Auctioneer.Models.CarFeatures>
+
+@{
+    ViewData["Title"] = "Car Features";
+}
+
+<h1>Car Features</h1>
+
+<p>
+    <a class="btn btn-success float-right" asp-action="CreateFeature">Add New Feature</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+               Feature:
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CarFeature)
+            </td>
+            <td>
+                <div class="row float-right">
+                    <a class="btn btn-primary" asp-action="EditFeature" asp-route-id="@item.CarFeatureID">Edit</a> &nbsp;
+                    <a class="btn btn-danger" asp-action="DeleteFeature" asp-route-id="@item.CarFeatureID">Delete</a>
+                </div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

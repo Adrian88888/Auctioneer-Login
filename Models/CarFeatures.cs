@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace Auctioneer.Models
     {
         [Key]
         public int CarFeatureID { get; set; }
+        [DisplayName("Car Feature")]
         public string CarFeature { get; set; }
 
         public bool IsSelected { get; set; }

@@ -107,16 +107,16 @@ namespace Auctioneer.Controllers
             if (ModelState.IsValid)
             {
                 Builder builder = new();
-                var auction = new Auction();
-                auction.Gallery = new List<Gallery>();
-                auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
+                Auction auction = builder.VMtoAuctionModel(auctionViewModel);
 
                 if (auctionViewModel.ImageFiles != null && auctionViewModel.ImageFiles.Count > 0)
                 {
                     foreach (IFormFile imageFile in auctionViewModel.ImageFiles)
                     {
-                        var gallery = new Gallery();
-                        gallery.ImageName = builder.SaveImageToFile(_hostEnvironment, imageFile);
+                        var gallery = new Gallery
+                        {
+                            ImageName = builder.SaveImageToFile(_hostEnvironment, imageFile)
+                        };
                         auction.Gallery.Add(gallery);
                     }
                 }
@@ -134,19 +134,7 @@ namespace Auctioneer.Controllers
                         }
                     }
                 }
-                //insert the record to database
-
-                auction.Duration = (int)auctionViewModel.Duration;
-                auction.Title = auctionViewModel.Title;
-                auction.Description = auctionViewModel.Description;
-                auction.MinBid = (int)auctionViewModel.MinBid;
-                auction.MaxBid = (int)auctionViewModel.MaxBid;
-                auction.CarBrandID = (int)auctionViewModel.CarBrandID;
-                auction.CarTypeID = (int)auctionViewModel.CarTypeID;
-                auction.CreationDate = DateTime.Now;
                 auction.AuctionOwnerID = _userManager.GetUserId(User);
-
-
                 _db.Auction.Add(auction);
                 _db.SaveChanges();
                 return RedirectToAction("Display", new { id = auction.AuctionID });
@@ -161,7 +149,7 @@ namespace Auctioneer.Controllers
             return Json(types);
         }
         [AllowAnonymous]
-        public IActionResult Display(int? id)
+        public async System.Threading.Tasks.Task<IActionResult> DisplayAsync(int? id)
         {
             if (id == null || id == 0)
             {
@@ -169,9 +157,14 @@ namespace Auctioneer.Controllers
             }
 
             Builder builder = new();
-            var model = new AuctionViewModel();
-            model = builder.GetAuctionByID(_db, id);
-
+            Auction auction = builder.GetAuctionByID(_db, (int)id);
+            AuctionViewModel model = await builder.AuctionModelToVMAsync(auction, _userManager);
+            model.Features = new List<CarFeatures>();
+            foreach (var  auctionCarFeature in model.AuctionCarFeatures)
+            {
+                CarFeatures feature = _db.CarFeatures.Where(a => a.CarFeatureID == auctionCarFeature.CarFeaturesID).FirstOrDefault();
+                model.Features.Add(feature);
+            }
             var userID = _userManager.GetUserId(User);
             model.UserLastBid = builder.GetUserLastBid(_db, userID, (int)id);
 

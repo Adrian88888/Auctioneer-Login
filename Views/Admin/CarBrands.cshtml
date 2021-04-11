@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Auctioneer.Models.CarBrand>
+
+@{
+    ViewData["Title"] = "Car Brands";
+}
+
+<h1>Car Brands</h1>
+
+<p>
+    <a class="btn btn-success float-right " asp-action="CreateBrand">Add A New Car Brand</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Brand)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand)
+            </td>
+            <td>
+                <div class="row float-right">
+                    <a class="btn btn-primary" asp-action="EditBrand" asp-route-id="@item.CarBrandID">Edit</a> &nbsp;
+                    <a class="btn btn-danger" asp-action="DeleteBrand" asp-route-id="@item.CarBrandID">Delete</a>
+                </div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

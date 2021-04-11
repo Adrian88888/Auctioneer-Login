@@ -26,6 +26,18 @@ namespace Auctioneer.ViewModels
 
             return result;
         }
+        public Auction GetAuctionByID(ApplicationDbContext _db, int id)
+        {
+            List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).Include( d => d.AuctionCarFeatures).ToList();
+            foreach (var auction in auctions)
+            {
+                if (auction.AuctionID == id)
+                {
+                    return auction;
+                }
+            }
+            return null;
+        }
 
         public async Task<AuctionViewModel> AuctionModelToVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
         {
@@ -41,19 +53,49 @@ namespace Auctioneer.ViewModels
             auctionViewModel.CurrentBid = auction.CurrentBid;
             auctionViewModel.Brand = auction.CarBrand.Brand;
             auctionViewModel.Type = auction.CarType.Type;
+            auctionViewModel.AuctionCarFeatures = auction.AuctionCarFeatures;
+            var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
+            auctionViewModel.AuctionOwner = user.UserName;
+            user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
+            auctionViewModel.AuctionWinner = user != null ? user.UserName : "None";
+            return auctionViewModel;
+        }
+        public async Task<BidViewModel> AuctionModelToBidsVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
+        {
+            BidViewModel auctionViewModel = new();
+            auctionViewModel.Image = auction.Gallery.FirstOrDefault();
+            auctionViewModel.AuctionID = auction.AuctionID;
+            auctionViewModel.Title = auction.Title;
+            auctionViewModel.Description = auction.Description;
+            auctionViewModel.CreationDate = auction.CreationDate;
+            auctionViewModel.Duration = auction.Duration;
+            auctionViewModel.MaxBid = auction.MaxBid;
+            auctionViewModel.MinBid = auction.MinBid;
+            auctionViewModel.CurrentBid = auction.CurrentBid;
+            auctionViewModel.Brand = auction.CarBrand.Brand;
+            auctionViewModel.Type = auction.CarType.Type;
 
             var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
             auctionViewModel.AuctionOwner = user.UserName;
             user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
-            if (user != null)
-            {
-                auctionViewModel.AuctionWinner = user.UserName;
-            }
-            else
-            {
-                auctionViewModel.AuctionWinner = "None";
-            }
+            auctionViewModel.AuctionWinner = user != null ? user.UserName : "None";
             return auctionViewModel;
+        }
+        public Auction VMtoAuctionModel (AuctionViewModel auctionViewModel)
+        {
+            Auction auction = new();
+            auction.Duration = (int)auctionViewModel.Duration;
+            auction.Title = auctionViewModel.Title;
+            auction.Description = auctionViewModel.Description;
+            auction.MinBid = (int)auctionViewModel.MinBid;
+            auction.MaxBid = (int)auctionViewModel.MaxBid;
+            auction.CarBrandID = (int)auctionViewModel.CarBrandID;
+            auction.CarTypeID = (int)auctionViewModel.CarTypeID;
+            auction.CreationDate = DateTime.Now;
+            auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
+            auction.Gallery = new List<Gallery>();
+
+            return auction;
         }
 
         public int GetUserLastBid(ApplicationDbContext _db, string userID, int auctionID)
@@ -67,6 +109,20 @@ namespace Auctioneer.ViewModels
                 }
             }
             return 0;
+        }
+
+        public List<Bids> GetAllUserBids(ApplicationDbContext _db, string userID)
+        {
+            List<Bids> allUserBids = new();
+            List<Bids> bids = _db.Bids.ToList();
+            foreach (var bid in bids)
+            {
+                if (bid.UserID == userID)
+                {
+                    allUserBids.Add(bid);
+                }
+            }
+            return allUserBids;
         }
 
         public List<Auction> GetAuctionsByOwnerID(ApplicationDbContext _db, string userID)
@@ -92,40 +148,6 @@ namespace Auctioneer.ViewModels
             string path = Path.Combine(wwwRootPath + "/Image/", fileName);
             imageFile.CopyTo(new FileStream(path, FileMode.Create));
             return fileName;
-        }
-
-        public AuctionViewModel GetAuctionByID(ApplicationDbContext _db, int? id)
-        {
-            var model = new AuctionViewModel();
-            var auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).Include(d => d.AuctionCarFeatures);
-            foreach (var auction in auctions)
-            {
-                if (auction.AuctionID == id)
-                {
-                    model.AuctionID = auction.AuctionID;
-                    model.Duration = auction.Duration;
-                    model.Description = auction.Description;
-                    model.CreationDate = auction.CreationDate;
-                    model.MinBid = auction.MinBid;
-                    model.MaxBid = auction.MaxBid;
-                    model.CurrentBid = auction.CurrentBid;
-                    model.Brand = auction.CarBrand.Brand;
-                    model.Type = auction.CarType.Type;
-                    model.Gallery = auction.Gallery;
-                    model.Title = auction.Title;
-                    model.Features = new();
-
-                    List<AuctionCarFeatures> auctionCarFeatures = auction.AuctionCarFeatures;
-
-                    foreach (var auctionCarFeature in auctionCarFeatures)
-                    {
-                        var feature = _db.CarFeatures.Where(x => x.CarFeatureID == auctionCarFeature.CarFeaturesID).FirstOrDefault();
-                        model.Features.Add(feature);
-
-                    }
-                }
-            }
-            return model;
         }
     }
 }

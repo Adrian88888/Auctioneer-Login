@@ -39,6 +39,7 @@ namespace Auctioneer.Models
         public virtual CarType CarType { get; set; }
         public virtual List<Gallery> Gallery { get; set; }
         public virtual List<AuctionCarFeatures> AuctionCarFeatures { get; set; }
+        public Boolean IsBlocked { get; set; }
     }
 
 }
