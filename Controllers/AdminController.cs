@@ -18,9 +18,9 @@ namespace Auctioneer.Controllers
             _db = db;
         }
 
-
         public IActionResult Index()
         {
+
             return View();
         }
 

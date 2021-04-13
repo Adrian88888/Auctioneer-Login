@@ -1,10 +1,9 @@
 ﻿using Auctioneer.Data;
 using Auctioneer.Models;
+using Auctioneer.Services;
 using Auctioneer.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +35,8 @@ namespace Auctioneer.Controllers
                 {
                     if (auction.AuctionID == bid.AuctionID)
                     {
-                        AuctionViewModel auctionViewModel = await builder.AuctionModelToVMAsync(auction, _userManager);
+                        AuctionViewModel auctionViewModel = new();
+                       await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
                         auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, auction.AuctionID);
                         model.Auctions.Add(auctionViewModel);
                     }
@@ -73,11 +73,15 @@ namespace Auctioneer.Controllers
                     if (userBid != null)
                     {
                         userBid.Amount = model.Amount;
+                        auction.CurrentBid = model.Amount;
+                        auction.AuctionWinnerID = userID;
 
                     }
                     else
                     {
                         Bids bid = new();
+                        auction.CurrentBid = model.Amount;
+                        auction.AuctionWinnerID = userID;
                         bid.Amount = model.Amount;
                         bid.UserID = userID;
                         bid.AuctionID = (int)id;

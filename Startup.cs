@@ -1,5 +1,6 @@
 using Auctioneer.Data;
 using Auctioneer.Models;
+using Auctioneer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,7 +38,7 @@ namespace Auctioneer
 
             services.AddDefaultIdentity<IdentityUser>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = true;
+                options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 })

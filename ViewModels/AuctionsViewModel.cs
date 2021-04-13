@@ -39,47 +39,27 @@ namespace Auctioneer.ViewModels
             return null;
         }
 
-        public async Task<AuctionViewModel> AuctionModelToVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
-        {
-            AuctionViewModel auctionViewModel = new();
-            auctionViewModel.Gallery = auction.Gallery;
-            auctionViewModel.AuctionID = auction.AuctionID;
-            auctionViewModel.Title = auction.Title;
-            auctionViewModel.Description = auction.Description;
-            auctionViewModel.CreationDate = auction.CreationDate;
-            auctionViewModel.Duration = auction.Duration;
-            auctionViewModel.MaxBid = auction.MaxBid;
-            auctionViewModel.MinBid = auction.MinBid;
-            auctionViewModel.CurrentBid = auction.CurrentBid;
-            auctionViewModel.Brand = auction.CarBrand.Brand;
-            auctionViewModel.Type = auction.CarType.Type;
-            auctionViewModel.AuctionCarFeatures = auction.AuctionCarFeatures;
-            var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
-            auctionViewModel.AuctionOwner = user.UserName;
-            user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
-            auctionViewModel.AuctionWinner = user != null ? user.UserName : "None";
-            return auctionViewModel;
-        }
+       
         public async Task<BidViewModel> AuctionModelToBidsVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
         {
-            BidViewModel auctionViewModel = new();
-            auctionViewModel.Image = auction.Gallery.FirstOrDefault();
-            auctionViewModel.AuctionID = auction.AuctionID;
-            auctionViewModel.Title = auction.Title;
-            auctionViewModel.Description = auction.Description;
-            auctionViewModel.CreationDate = auction.CreationDate;
-            auctionViewModel.Duration = auction.Duration;
-            auctionViewModel.MaxBid = auction.MaxBid;
-            auctionViewModel.MinBid = auction.MinBid;
-            auctionViewModel.CurrentBid = auction.CurrentBid;
-            auctionViewModel.Brand = auction.CarBrand.Brand;
-            auctionViewModel.Type = auction.CarType.Type;
+            BidViewModel bidViewModel = new();
+            bidViewModel.Image = auction.Gallery.FirstOrDefault();
+            bidViewModel.AuctionID = auction.AuctionID;
+            bidViewModel.Title = auction.Title;
+            bidViewModel.Description = auction.Description;
+            bidViewModel.CreationDate = auction.CreationDate;
+            bidViewModel.Duration = auction.Duration;
+            bidViewModel.MaxBid = auction.MaxBid;
+            bidViewModel.MinBid = auction.MinBid;
+            bidViewModel.CurrentBid = auction.CurrentBid;
+            bidViewModel.Brand = auction.CarBrand.Brand;
+            bidViewModel.Type = auction.CarType.Type;
 
             var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
-            auctionViewModel.AuctionOwner = user.UserName;
+            bidViewModel.AuctionOwner = user.UserName;
             user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
-            auctionViewModel.AuctionWinner = user != null ? user.UserName : "None";
-            return auctionViewModel;
+            bidViewModel.AuctionWinner = user != null ? user.UserName : "None";
+            return bidViewModel;
         }
         public Auction VMtoAuctionModel (AuctionViewModel auctionViewModel)
         {

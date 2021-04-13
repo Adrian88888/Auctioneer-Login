@@ -31,13 +31,14 @@ namespace Auctioneer.Controllers
             model.Auctions = new List<AuctionViewModel>();
 
             Builder builder = new();
-            var auctions = builder.GetAllAuctions(_db);
+            List<Auction> auctions = builder.GetAllAuctions(_db);
 
             foreach (var auction in auctions)
             {
                 if (auction.ExpiryDate > DateTime.Now)
                 {
-                    AuctionViewModel auctionViewModel = await builder.AuctionModelToVMAsync(auction, _userManager);
+                    AuctionViewModel auctionViewModel = new();
+                     await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
                     var userID = _userManager.GetUserId(User);
                     auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, auction.AuctionID);
                     model.Auctions.Add(auctionViewModel);
@@ -55,7 +56,8 @@ namespace Auctioneer.Controllers
             var userAuctions = builder.GetAuctionsByOwnerID(_db, userID);
             foreach (var userAuction in userAuctions)
             {
-                AuctionViewModel auctionViewModel = await builder.AuctionModelToVMAsync(userAuction, _userManager);
+                AuctionViewModel auctionViewModel = new();
+                await auctionViewModel.AuctionModelToVMAsync(userAuction, _userManager);
                 auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, userAuction.AuctionID);
                 model.Auctions.Add(auctionViewModel);
             }
@@ -76,7 +78,8 @@ namespace Auctioneer.Controllers
             {
                 if (auction.ExpiryDate < DateTime.Now)
                 {
-                    AuctionViewModel auctionViewModel = await builder.AuctionModelToVMAsync(auction, _userManager);
+                    AuctionViewModel auctionViewModel = new();
+                    await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
                     //load user last bid
                     var userID = _userManager.GetUserId(User);
                     auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, auction.AuctionID);
@@ -158,12 +161,17 @@ namespace Auctioneer.Controllers
 
             Builder builder = new();
             Auction auction = builder.GetAuctionByID(_db, (int)id);
-            AuctionViewModel model = await builder.AuctionModelToVMAsync(auction, _userManager);
+            AuctionViewModel model = new();
+            await model.AuctionModelToVMAsync(auction, _userManager);
             model.Features = new List<CarFeatures>();
             foreach (var  auctionCarFeature in model.AuctionCarFeatures)
             {
                 CarFeatures feature = _db.CarFeatures.Where(a => a.CarFeatureID == auctionCarFeature.CarFeaturesID).FirstOrDefault();
-                model.Features.Add(feature);
+                if (feature != null)
+                {
+                    model.Features.Add(feature);
+                }
+                
             }
             var userID = _userManager.GetUserId(User);
             model.UserLastBid = builder.GetUserLastBid(_db, userID, (int)id);
