@@ -41,7 +41,7 @@ namespace Auctioneer
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
-                })
+            })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
@@ -49,6 +49,12 @@ namespace Auctioneer
             {
                 // This pushes users to login if not authenticated
                 options.Filters.Add(new AuthorizeFilter());
+            });
+            services.AddAuthorization(options => {
+                options.AddPolicy("readpolicy",
+                    builder => builder.RequireRole("Admin", "Manager"));
+                options.AddPolicy("writepolicy",
+                    builder => builder.RequireRole("Admin"));
             });
         }
 

@@ -95,11 +95,13 @@ namespace Auctioneer.Controllers
                 {
                     if (model.Amount <= auction.CurrentBid || model.Amount <= auction.MinBid)
                     {
+                        model.Gallery = auction.Gallery;
                         ModelState.AddModelError("Amount", "Your bid must be higher than the minimum bid/current bid.");
                         return View(model);
                     }
                     else
                     {
+                        model.Gallery = auction.Gallery;
                         ModelState.AddModelError("Amount", "You cannot bid more than you account balance!");
                         return View(model);
                     }

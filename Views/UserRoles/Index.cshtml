@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Auctioneer.Models.CarFeatures>
+﻿@using Auctioneer.Models
+@model List<Auctioneer.ViewModels.UserRolesViewModel>
 
 @{
     ViewData["Title"] = "Admin";
@@ -18,33 +19,23 @@
         <a class="btn  btn-primary text-light" asp-controller="UserRoles" asp-action="Index">Edit User Roles</a> &nbsp;
         <a class="btn  btn-primary text-light" asp-controller="Roles" asp-action="Index">Edit Roles</a> &nbsp;
     </div>
-
-    <h1>Car Features</h1>
-
-    <p>
-        <a class="btn btn-success float-right" asp-action="CreateFeature">Add New Feature</a>
-    </p>
-    <table class="table">
+    <h1>User Roles</h1>
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>
-                    Feature:
-                </th>
+                <th>Email</th>
+                <th>Roles</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var user in Model)
             {
                 <tr>
+                    <td>@user.Email</td>
+                    <td>@string.Join(" , ", user.Roles.ToList())</td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.CarFeature)
-                    </td>
-                    <td>
-                        <div class="row float-right">
-                            <a class="btn btn-primary" asp-action="EditFeature" asp-route-id="@item.CarFeatureID">Edit</a> &nbsp;
-                            <a class="btn btn-danger" asp-action="DeleteFeature" asp-route-id="@item.CarFeatureID">Delete</a>
-                        </div>
+                        <a class="btn btn-primary" asp-controller="UserRoles" asp-action="Manage" asp-route-userId="@user.UserId">Manage Roles</a>
                     </td>
                 </tr>
             }

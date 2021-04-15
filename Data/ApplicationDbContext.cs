@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Auctioneer.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Auctioneer.ViewModels;
 
 namespace Auctioneer.Data
 {
@@ -22,5 +23,6 @@ namespace Auctioneer.Data
         public DbSet<Deposits> Deposits { get; set; }
         public DbSet<CarFeatures> CarFeatures { get; set; }
         public DbSet<AuctionCarFeatures> AuctionCarFeatures { get; set; }
+        public DbSet<Auctioneer.ViewModels.UserRolesViewModel> UserRolesViewModel { get; set; }
     }
 }

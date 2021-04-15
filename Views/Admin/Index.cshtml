@@ -1,4 +1,4 @@
-﻿@model Auctioneer.Models.Auction
+﻿@model Auctioneer.ViewModels.AdminViewModel
 
 @{
     ViewData["Title"] = "Admin";
@@ -11,12 +11,15 @@
         </div>
     </div>
     <br /><br />
-    <div class="row">
-    <div class="col-6">
-        <a asp-action="CarBrands" class="btn btn-block btn-primary"> Edit Car Brands </a>
+
+          <div class="row">
+              <a class="btn  btn-primary text-light tablink" asp-controller="Admin" asp-action="CarBrands" id="defaultOpen">Edit Car Brands</a> &nbsp;
+              <a class="btn  btn-primary text-light tablink" asp-controller="Admin" asp-action="CarFeatures">Edit Car Features</a> &nbsp;
+              <a class="btn  btn-primary text-light tablink" asp-controller="UserRoles" asp-action="Index">Edit User Roles</a> &nbsp;
+              <a class="btn  btn-primary text-light tablink" asp-controller="Roles" asp-action="Index">Edit Roles</a> &nbsp;
+
+          </div>
     </div>
-    <div class="col-6">
-        <a asp-action="CarFeatures" class="btn btn-block btn-primary"> Edit Car Features </a>
-    </div>
-        </div>
-</div>
+<script>
+    document.getElementById("defaultOpen").click();
+</script>

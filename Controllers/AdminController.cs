@@ -1,5 +1,7 @@
 ﻿using Auctioneer.Data;
 using Auctioneer.Models;
+using Auctioneer.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -17,19 +19,23 @@ namespace Auctioneer.Controllers
         {
             _db = db;
         }
-
+        [Authorize(Policy ="readpolicy")]
         public IActionResult Index()
         {
+            AdminViewModel model = new();
+            model.CarBrands = _db.CarBrand.ToList();
+            model.CarFeatures = _db.CarFeatures.ToList();
 
-            return View();
+            return View(model);
         }
-
+        [Authorize(Policy = "readpolicy")]
         public IActionResult CarFeatures()
         {
             var model = _db.CarFeatures.ToList();
             return View(model);
         }
         [HttpGet]
+        [Authorize(Policy = "writepolicy")]
         public IActionResult CreateFeature()
         {
             return View();

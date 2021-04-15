@@ -43,7 +43,7 @@ namespace Auctioneer.ViewModels
         public async Task<BidViewModel> AuctionModelToBidsVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
         {
             BidViewModel bidViewModel = new();
-            bidViewModel.Image = auction.Gallery.FirstOrDefault();
+            bidViewModel.Gallery = auction.Gallery;
             bidViewModel.AuctionID = auction.AuctionID;
             bidViewModel.Title = auction.Title;
             bidViewModel.Description = auction.Description;

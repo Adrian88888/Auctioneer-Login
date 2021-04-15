@@ -39,53 +39,7 @@
                     @foreach (var obj in Model.Auctions)
 
                     {
-                        TimeSpan timeRemaining = new TimeSpan(obj.ExpiryDate.Ticks - DateTime.Now.Ticks);
-                            <div class="row p-2 bg-white border rounded">
-                                <div class="col-md-4 mt-2">
-                                    <img class="img-fluid img-responsive rounded product-image" src="@("~/Image/" + obj.Gallery.FirstOrDefault().ImageName)" asp-append-version="true">
-                                    <p class="text-info font-weight-bold mt-3">Owner: @obj.AuctionOwner </p>
-                                    <p class="text-success font-weight-bold">Current winner: @obj.AuctionWinner</p>
-                                </div>
-                                <div class="col-md-4 border-left mt-2">
-                                    <h5>@obj.Brand @obj.Type</h5>
-                                    <p class="text-info">@obj.Title</p>
-
-                                    <p class="text-danger">Expiry Date: @obj.ExpiryDate.ToString("dd MMMM yyyy, HH:mm") </p>
-                                    @if (timeRemaining.TotalSeconds > 0)
-                                    {
-                                        <p class="text-success font-weight-bold">
-                                            Time remaining: <span id="@("time-left" + obj.AuctionID)"></span>
-                                            <script>
-                                startCountdown(@timeRemaining.TotalSeconds, '@("time-left" + obj.AuctionID)');
-                                            </script>
-                                        </p>
-                                    }
-                    else
-                    {
-                                <p class="text-success font-weight-bold"> Auction has ended. </p>
-                                    }
-                                    <div class="align-bottom">
-                                        <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
-                                        <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@obj.AuctionID">Place bid</a>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 border-left mt-2">
-                                    <div class="alert alert-primary" role="alert">
-                                        Starting bid: $@obj.MinBid
-                                    </div>
-                                    <div class="alert alert-success" role="alert">
-                                        Winning bid: $@obj.MaxBid
-                                    </div>
-                                    <div class="alert alert-warning" role="alert">
-                                        Current bid: $@obj.CurrentBid
-                                    </div>
-                                    <div class="alert alert-info" role="alert">
-                                        Your last bid: $0
-                                    </div>
-
-                                </div>
-                            </div>
-                            <br />
+                    <partial name="_AuctionDetailsPartial" for="@obj" />
                         
                     }
                 </div>
