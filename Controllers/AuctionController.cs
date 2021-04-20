@@ -141,7 +141,7 @@ namespace Auctioneer.Controllers
                 auction.AuctionOwnerID = _userManager.GetUserId(User);
                 _db.Auction.Add(auction);
                 _db.SaveChanges();
-                return RedirectToAction("Display", new { id = auction.AuctionID });
+                return RedirectToAction("Details", new { id = auction.AuctionID });
             }
             auctionViewModel.Brands = _db.CarBrand.ToList();
             auctionViewModel.Features = _db.CarFeatures.ToList();

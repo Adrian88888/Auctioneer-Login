@@ -59,18 +59,29 @@
 
             <div class="col-md-4">
                 <h3 class="my-3">Auction Details</h3>
-                <div class="alert alert-primary" role="alert">
-                    Starting bid: $@Model.MinBid
-                </div>
-                <div class="alert alert-success" role="alert">
-                    Winning bid: $@Model.MaxBid
-                </div>
-                <div class="alert alert-warning" role="alert">
-                    Highest Bid: $@Model.CurrentBid
-                </div>
-                <div class="alert alert-info" role="alert">
-                    Your last bid: $@Model.UserLastBid
-                </div>
+                    <div class="alert alert-primary" role="alert">
+                        Starting bid: $@Convert.ToDecimal(Model.MinBid).ToString("#,##0.00")
+                    </div>
+                    <div class="alert alert-primary" role="alert">
+                        Winning bid: $@Convert.ToDecimal(Model.MaxBid).ToString("#,##0.00")
+                    </div>
+                    <div class="alert alert-success" role="alert">
+                        Highest Bid: $@Convert.ToDecimal(Model.CurrentBid).ToString("#,##0.00")
+                    </div>
+
+                    @if (Model.AuctionWinner == User.Identity.Name)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            Your last bid: $@Convert.ToDecimal(Model.UserLastBid).ToString("#,##0.00")
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            Your last bid: $@Convert.ToDecimal(Model.UserLastBid).ToString("#,##0.00")
+                        </div>
+                    }
+
                 @if (Model.ExpiryDate > DateTime.Now)
                 {
                     <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@Model.AuctionID">Place bid</a>
