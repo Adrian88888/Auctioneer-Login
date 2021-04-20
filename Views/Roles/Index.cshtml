@@ -5,19 +5,7 @@
 }
 
 <div class="container p-3">
-    <div class="row pt-4">
-        <div class="col-6">
-            <h2 class="text-dark">Administration</h2>
-        </div>
-    </div>
-    <br /><br />
-
-          <div class="row">
-              <a class="btn  btn-primary text-light" asp-controller="Admin" asp-action="CarBrands">Edit Car Brands</a> &nbsp;
-              <a class="btn  btn-primary text-light" asp-controller="Admin" asp-action="CarFeatures">Edit Car Features</a> &nbsp;
-              <a class="btn  btn-primary text-light" asp-controller="UserRoles" asp-action="Index">Edit User Roles</a> &nbsp;
-              <a class="btn  btn-primary text-light" asp-controller="Roles" asp-action="Index">Edit Roles</a> &nbsp;
-          </div>
+<partial name="_AdministrationHeaderPartial"/>
     <h1>List of Roles</h1>
 
     <a class="btn btn-success float-right " asp-action="Create">Add A New Role</a>

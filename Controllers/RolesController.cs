@@ -18,12 +18,13 @@ namespace Auctioneer.Controllers
             this._db = _db;
             this.roleManager = roleManager;
         }
+        [Authorize(Policy = "readpolicy")]
         public IActionResult Index()
         {
             var roles = roleManager.Roles.ToList();
             return View(roles);
         }
-
+        [Authorize(Policy = "writepolicy")]
         public IActionResult Create()
         {
             return View(new IdentityRole());
@@ -35,6 +36,7 @@ namespace Auctioneer.Controllers
             await roleManager.CreateAsync(role);
             return RedirectToAction("Index");
         }
+        [Authorize(Policy = "writepolicy")]
         public IActionResult Delete(string id)
         {
             var role = _db.Roles.Where(d => d.Id == id).FirstOrDefault();

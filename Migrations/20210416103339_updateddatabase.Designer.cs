@@ -4,14 +4,16 @@ using Auctioneer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Auctioneer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210416103339_updateddatabase")]
+    partial class updateddatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,10 +34,10 @@ namespace Auctioneer.Migrations
                     b.Property<string>("AuctionWinnerID")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CarBrandID")
+                    b.Property<int?>("CarBrandID")
                         .HasColumnType("int");
 
-                    b.Property<int>("CarTypeID")
+                    b.Property<int?>("CarTypeID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -421,15 +423,11 @@ namespace Auctioneer.Migrations
                 {
                     b.HasOne("Auctioneer.Models.CarBrand", "CarBrand")
                         .WithMany()
-                        .HasForeignKey("CarBrandID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CarBrandID");
 
                     b.HasOne("Auctioneer.Models.CarType", "CarType")
                         .WithMany()
-                        .HasForeignKey("CarTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CarTypeID");
 
                     b.Navigation("CarBrand");
 

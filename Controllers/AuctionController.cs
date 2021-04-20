@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Auctioneer.Controllers
 {
@@ -25,7 +26,7 @@ namespace Auctioneer.Controllers
             _userManager = userManager;
         }
         [AllowAnonymous]
-        public async System.Threading.Tasks.Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> IndexAsync()
         {
             AuctionsViewModel model = new();
             model.Auctions = new List<AuctionViewModel>();
@@ -47,7 +48,7 @@ namespace Auctioneer.Controllers
             return View(model);
         }
 
-        public async System.Threading.Tasks.Task<IActionResult> MyAuctionsAsync()
+        public async Task<IActionResult> MyAuctionsAsync()
         {
             Builder builder = new();
             AuctionsViewModel model = new();
@@ -66,7 +67,7 @@ namespace Auctioneer.Controllers
 
 
         [AllowAnonymous]
-        public async System.Threading.Tasks.Task<IActionResult> ExpiredAuctionsAsync()
+        public async Task<IActionResult> ExpiredAuctionsAsync()
         {
             AuctionsViewModel model = new();
             model.Auctions = new List<AuctionViewModel>();
@@ -152,7 +153,7 @@ namespace Auctioneer.Controllers
             return Json(types);
         }
         [AllowAnonymous]
-        public async System.Threading.Tasks.Task<IActionResult> DisplayAsync(int? id)
+        public async Task<IActionResult> DetailsAsync(int? id)
         {
             if (id == null || id == 0)
             {

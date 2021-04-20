@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Auctioneer.Models.CarBrand>
+
+@{
+    ViewData["Title"] = "Admin";
+}
+<div class="container p-3">
+    <partial name="_AdministrationHeaderPartial" />
+
+    <h1>Edit Car Models</h1>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Brand)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Brand)
+                    </td>
+                    <td>
+                        <a class="btn btn-primary float-right" asp-action="EditBrandModels" asp-route-id="@item.CarBrandID">Edit Models</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
