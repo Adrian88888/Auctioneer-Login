@@ -11,25 +11,31 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item dropdown ml-auto">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @User.Identity.Name <i class="far fa-user"></i>
-            </a>
-            <div class="dropdown-menu " aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" asp-controller="Auction" asp-action="MyAuctions">My auctions</a>
-                <a class="dropdown-item" asp-controller="Bids" asp-action="Index">My Bids</a>
-                <a class="dropdown-item" asp-controller="Deposits" asp-action="AddFunds">Add funds</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Edit Profile</a>
-            </div>
-        </li>
         @if (!User.IsInRole("Admin"))
         {
+            <li class="nav-item dropdown ml-auto">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @User.Identity.Name <i class="far fa-user"></i>
+                </a>
+                <div class="dropdown-menu " aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" asp-controller="Auction" asp-action="MyAuctions">My auctions</a>
+                    <a class="dropdown-item" asp-controller="Bids" asp-action="Index">My Bids</a>
+                    <a class="dropdown-item" asp-controller="Deposits" asp-action="AddFunds">Add funds</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Edit Profile</a>
+                </div>
+            </li>
             <li class="nav-item">
                 <a class="nav-link text-light" asp-area="" asp-controller="Deposits" asp-action="AddFunds">Balance: $ @Convert.ToDecimal(userBalance).ToString("#,##0.00")</a>
             </li>
         }
-
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-light">
+                    @User.Identity.Name <i class="far fa-user"></i></a>
+            </li>
+        }
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                 <button type="submit" class="nav-link btn btn-link text-light">Logout 	&nbsp;<i class="fas fa-sign-out-alt"></i></button>

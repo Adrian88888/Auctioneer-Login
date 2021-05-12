@@ -1,5 +1,6 @@
-﻿using Auctioneer.Models;
+﻿using Database.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,6 +20,25 @@ namespace Auctioneer.ViewModels
         public new int? CarTypeID { get; set; }
         public new int? CarBrandID { get; set; }
         public new List<IFormFile> ImageFiles { get; set; }
+        public async Task AuctionModelToBidsVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
+        {
+            Gallery = auction.Gallery;
+            AuctionID = auction.AuctionID;
+            Title = auction.Title;
+            Description = auction.Description;
+            CreationDate = auction.CreationDate;
+            Duration = auction.Duration;
+            MaxBid = auction.MaxBid;
+            MinBid = auction.MinBid;
+            CurrentBid = auction.CurrentBid;
+            Brand = auction.CarBrand.Brand;
+            Type = auction.CarType.Type;
+
+            var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
+            AuctionOwner = user.UserName;
+            user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
+            AuctionWinner = user != null ? user.UserName : "None";
+        }
     }
 
 

@@ -1,4 +1,4 @@
-﻿using Auctioneer.Data;
+﻿using Database.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +37,7 @@ namespace Auctioneer.Controllers
             return RedirectToAction("Index");
         }
         [Authorize(Policy = "writepolicy")]
+        [HttpPost]
         public IActionResult Delete(string id)
         {
             var role = _db.Roles.Where(d => d.Id == id).FirstOrDefault();

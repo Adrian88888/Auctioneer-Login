@@ -1,20 +1,13 @@
-using Auctioneer.Data;
-using Auctioneer.Models;
 using Auctioneer.Services;
+using Auctioneer.Services.EmailServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Auctioneer
 {
@@ -31,19 +24,20 @@ namespace Auctioneer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<BalanceService>();
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddTransient<EmailSender>();
+            services.AddDbContext<Database.Data.ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<IdentityUser>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             })
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<Database.Data.ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddMvc(options =>
             {

@@ -1,5 +1,5 @@
-﻿using Auctioneer.Data;
-using Auctioneer.Models;
+﻿using Database.Data;
+using Database.Models;
 using Auctioneer.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

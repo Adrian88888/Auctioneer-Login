@@ -5,7 +5,7 @@
 }
 
 <div class="container p-3">
-<partial name="_AdministrationHeaderPartial"/>
+    <partial name="_AdministrationHeaderPartial" />
     <h1>List of Roles</h1>
 
     <a class="btn btn-success float-right " asp-action="Create">Add A New Role</a>
@@ -24,7 +24,7 @@
             {
                 <tr>
                     <td>@role.Name</td>
-                    <td><a class="btn btn-danger float-right" asp-action="Delete" asp-route-id="@role.Id">Delete</a></td>
+                    <td><a class="btn btn-danger float-right text-white" onclick="ConfirmDelete(@role.Id)">Delete</a></td>
                 </tr>
 
 
@@ -32,3 +32,55 @@
         </tbody>
     </table>
 </div>
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4>Are you sure you want to delete?</h4>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary text-white" data-dismiss="modal">Cancel</a>
+                <a class="btn btn-success text-white" onclick="Delete()">Confirm</a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+@*hidden field for storing current employeeId*@
+<input type="hidden" id="hiddenId" />
+
+@section scripts{
+    <script>
+
+        var ConfirmDelete = function (Id) {
+
+            $("#myModal").modal('show');
+            $("#hiddenId").val(Id);
+          
+
+        }
+
+        var Delete = function () {
+
+            var Id = $("#hiddenId").val();
+
+            $.ajax({
+
+                type: "POST",
+                url: "/Roles/Delete",
+                data: { Id: Id },
+                success: function (result) {
+
+                    $("#myModal").modal("hide");
+                    location.reload();
+                }
+            })
+        }
+    </script>
+}
+

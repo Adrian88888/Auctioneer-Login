@@ -1,5 +1,5 @@
-﻿using Auctioneer.Data;
-using Auctioneer.Models;
+﻿using Database.Data;
+using Database.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -24,18 +24,18 @@ namespace Auctioneer.Controllers
         }
         [HttpGet]
         [Authorize(Policy = "writepolicy")]
-        public IActionResult CreateFeature()
+        public IActionResult Create()
         {
             return View();
         }
         [HttpPost]
-        public IActionResult CreateFeature(CarFeatures feature)
+        public IActionResult Create(CarFeatures feature)
         {
             _db.CarFeatures.Add(feature);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
-        public IActionResult DeleteFeature(int id)
+        public IActionResult Delete(int id)
         {
             var feature = _db.CarFeatures.Where(x => x.CarFeatureID == id).FirstOrDefault();
             _db.Remove(feature);
@@ -43,13 +43,13 @@ namespace Auctioneer.Controllers
             return RedirectToAction("Index");
         }
         [HttpGet]
-        public IActionResult EditFeature(int id)
+        public IActionResult Edit(int id)
         {
             var feature = _db.CarFeatures.Where(x => x.CarFeatureID == id).FirstOrDefault();
             return View(feature);
         }
         [HttpPost]
-        public IActionResult EditFeature(CarFeatures editedFeature)
+        public IActionResult Edit(CarFeatures editedFeature)
         {
             var id = editedFeature.CarFeatureID;
             CarFeatures feature = _db.CarFeatures.Where(x => x.CarFeatureID == id).FirstOrDefault();

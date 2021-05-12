@@ -17,7 +17,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label asp-for="Title"></label>
-                            <input asp-for="Title" class="form-control" placeholder="Please enter a title for the auction">
+                            <input asp-for="Title" class="form-control" placeholder="Please enter a title for the auction" autofocus>
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                     </div>
@@ -61,9 +61,10 @@
                             <label asp-for="MinBid" class="control-label"></label>
                             <select asp-for="MinBid" class="form-control">
                                 <option value="">Starting bid</option>
-                                <option value="100">100</option>
-                                <option value="500">500</option>
-                                <option value="1000">1000</option>
+                                @for (var i = 500; i <= 10000; i = i + 500)
+                                {
+                            <option value="@i">$@Convert.ToDecimal(i).ToString("#,##0.00")</option>
+                                }
                             </select>
                             <span asp-validation-for="MinBid" class="text-danger"></span>
                         </div>
@@ -85,9 +86,13 @@
                             <label asp-for="MaxBid" class="control-label"></label>
                             <select asp-for="MaxBid" class="form-control">
                                 <option value="">Winning bid</option>
-                                <option value="1000">1000</option>
-                                <option value="5000">5000</option>
-                                <option value="10000">10000</option>
+                                @for (var i = 5000; i <= 100000; i = i + 5000)
+                                {
+                            <option value="@i">$@Convert.ToDecimal(i).ToString("#,##0.00")</option>
+                                }
+
+
+
                             </select>
                             <span asp-validation-for="MaxBid" class="text-danger"></span>
                         </div>

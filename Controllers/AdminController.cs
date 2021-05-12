@@ -1,13 +1,5 @@
-﻿using Auctioneer.Data;
-using Auctioneer.Models;
-using Auctioneer.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Auctioneer.Controllers
 {
@@ -16,7 +8,7 @@ namespace Auctioneer.Controllers
         public AdminController()
         {
         }
-        [Authorize(Policy ="readpolicy")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View();

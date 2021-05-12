@@ -1,4 +1,4 @@
-﻿using Auctioneer.Models;
+﻿using Database.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -36,13 +36,8 @@ namespace Auctioneer.ViewModels
         public int? MaxBid { get; set; }
         public int? CurrentBid { get; set; }
         public DateTime CreationDate { get; set; }
-        public DateTime ExpiryDate
-        {
-            get
-            {
-                return CreationDate.AddDays((double)Duration);
-            }
-        }
+        public DateTime ExpiryDate { get; set; }
+
 
         public string ImageName { get; set; }
         [DisplayName("Upload Image")]
@@ -67,7 +62,8 @@ namespace Auctioneer.ViewModels
             AuctionID = auction.AuctionID;
             Title = auction.Title;
             Description = auction.Description;
-           CreationDate = auction.CreationDate;
+            CreationDate = auction.CreationDate;
+            ExpiryDate = auction.ExpiryDate;
             Duration = auction.Duration;
             MaxBid = auction.MaxBid;
             MinBid = auction.MinBid;

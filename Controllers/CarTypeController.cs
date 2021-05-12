@@ -1,11 +1,9 @@
-﻿using Auctioneer.Data;
-using Auctioneer.Models;
+﻿using Database.Data;
+using Database.Models;
+using Auctioneer.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Auctioneer.Controllers
 {
@@ -24,7 +22,11 @@ namespace Auctioneer.Controllers
         }
         public IActionResult EditBrandModels(int id)
         {
-            List<CarType> model = _db.CarType.Where(a => a.CarBrandID == id).ToList();
+            ViewBag.Id = id;
+            EditBrandModelsViewModel model = new();
+
+            model.CarTypes = _db.CarType.Where(a => a.CarBrandID == id).ToList();
+            model.Brand = _db.CarBrand.FirstOrDefault(a => a.CarBrandID == id).Brand.ToString();
             return View(model);
         }
         [HttpGet]
@@ -73,4 +75,3 @@ namespace Auctioneer.Controllers
         }
     }
 }
-

@@ -57,12 +57,16 @@
         }
         else
         {
-           <p class="text-danger font-weight-bold">The auction has ended. </p>
+            <p class="text-danger font-weight-bold">The auction has ended. </p>
         }
 
         <div class="align-bottom">
             <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Details" asp-route-id="@Model.AuctionID">Details</a>
             <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@Model.AuctionID">Place bid</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="btn btn-danger btn-block" asp-controller="Auction" asp-action="Block" asp-route-id="@Model.AuctionID">Remove auction</a>
+            }
         </div>
     </div>
     <div class="col-md-4 border-left mt-2">
@@ -92,4 +96,4 @@
 
     </div>
 </div>
-<br/>
+<br />

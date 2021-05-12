@@ -1,5 +1,5 @@
-﻿using Auctioneer.Data;
-using Auctioneer.Models;
+﻿using Database.Data;
+using Database.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -19,47 +19,7 @@ namespace Auctioneer.ViewModels
 
     public class Builder
     {
-        public List<Auction> GetAllAuctions(ApplicationDbContext _db)
-        {
-            var result = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
-
-            return result;
-        }
-        public Auction GetAuctionByID(ApplicationDbContext _db, int id)
-        {
-            List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).Include( d => d.AuctionCarFeatures).ToList();
-            foreach (var auction in auctions)
-            {
-                if (auction.AuctionID == id)
-                {
-                    return auction;
-                }
-            }
-            return null;
-        }
-
-       
-        public async Task<BidViewModel> AuctionModelToBidsVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
-        {
-            BidViewModel bidViewModel = new();
-            bidViewModel.Gallery = auction.Gallery;
-            bidViewModel.AuctionID = auction.AuctionID;
-            bidViewModel.Title = auction.Title;
-            bidViewModel.Description = auction.Description;
-            bidViewModel.CreationDate = auction.CreationDate;
-            bidViewModel.Duration = auction.Duration;
-            bidViewModel.MaxBid = auction.MaxBid;
-            bidViewModel.MinBid = auction.MinBid;
-            bidViewModel.CurrentBid = auction.CurrentBid;
-            bidViewModel.Brand = auction.CarBrand.Brand;
-            bidViewModel.Type = auction.CarType.Type;
-
-            var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
-            bidViewModel.AuctionOwner = user.UserName;
-            user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
-            bidViewModel.AuctionWinner = user != null ? user.UserName : "None";
-            return bidViewModel;
-        }
+  
         public Auction VMtoAuctionModel (AuctionViewModel auctionViewModel)
         {
             Auction auction = new();
@@ -71,52 +31,18 @@ namespace Auctioneer.ViewModels
             auction.CarBrandID = (int)auctionViewModel.CarBrandID;
             auction.CarTypeID = (int)auctionViewModel.CarTypeID;
             auction.CreationDate = DateTime.Now;
+            auction.ExpiryDate = auction.CreationDate.AddDays(auction.Duration);
             auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
             auction.Gallery = new List<Gallery>();
 
             return auction;
         }
 
-        public int GetUserLastBid(ApplicationDbContext _db, string userID, int auctionID)
-        {
-            List<Bids> bids = _db.Bids.ToList();
-            foreach (var bid in bids)
-            {
-                if (bid.UserID == userID && bid.AuctionID == auctionID)
-                {
-                    return bid.Amount;
-                }
-            }
-            return 0;
-        }
+      
 
-        public List<Bids> GetAllUserBids(ApplicationDbContext _db, string userID)
-        {
-            List<Bids> allUserBids = new();
-            List<Bids> bids = _db.Bids.ToList();
-            foreach (var bid in bids)
-            {
-                if (bid.UserID == userID)
-                {
-                    allUserBids.Add(bid);
-                }
-            }
-            return allUserBids;
-        }
 
-        public List<Auction> GetAuctionsByOwnerID(ApplicationDbContext _db, string userID)
-        {
-            List<Auction> userAuctions = new();
-            List<Auction> auctions = _db.Auction.Include(a => a.CarBrand).Include(b => b.CarType).Include(c => c.Gallery).ToList();
-            foreach (var auction in auctions)
-            {
-                if (auction.AuctionOwnerID == userID)
-                {
-                    userAuctions.Add(auction);
-                }
-            }
-            return userAuctions;
-        }
+
+     
 
         public string SaveImageToFile(IWebHostEnvironment _hostEnvironment, IFormFile imageFile)
         {

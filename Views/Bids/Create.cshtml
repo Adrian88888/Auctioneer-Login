@@ -27,12 +27,12 @@
                     <input asp-for="Type" hidden />
                     <input asp-for="AuctionOwner" hidden />
                     <input asp-for="AuctionWinner" hidden />
-                    <p class="text-success font-weight-bold">Current Account balance: $@Model.Balance</p>
+                    <p class="text-success font-weight-bold">Current Account balance:  $@Convert.ToDecimal(Model.Balance).ToString("#,##0.00")</p>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label asp-for="Amount"></label>
-                                <input asp-for="Amount" class="form-control" placeholder="Please enter the amount that you would like to bid">
+                                <input asp-for="Amount" class="form-control" placeholder="Please enter the amount that you would like to bid" autofocus>
                                 <span asp-validation-for="Amount" class="text-danger"></span>
                             </div>
                         </div>

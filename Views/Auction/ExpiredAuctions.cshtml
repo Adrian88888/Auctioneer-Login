@@ -20,7 +20,7 @@
             <div class="container mt-5 mb-5">
                 <div class="d-flex justify-content-center row">
                     <div class="col-md-10">
-                        @foreach (var obj in Model.Auctions)
+                        @foreach (var obj in Model.Auctions.OrderByDescending(x => x.ExpiryDate))
 
                         {
                             TimeSpan timeRemaining = new TimeSpan(obj.ExpiryDate.Ticks - DateTime.Now.Ticks);
@@ -38,7 +38,11 @@
                                 <div class="align-items-center align-content-center col-md-3 border-left mt-1">
 
                                     <div class="d-flex flex-column mt-4">
-                                        <a class="btn btn-primary btn-sm" asp-controller="Auction" asp-action="Display" asp-route-Id="@obj.AuctionID">Details</a>
+                                        <a class="btn btn-primary btn-sm" asp-controller="Auction" asp-action="Details" asp-route-Id="@obj.AuctionID">Details</a>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a class="btn btn-danger btn-block mt-2" asp-controller="Auction" asp-action="Block" asp-route-id="@obj.AuctionID">Remove auction</a>
+                                        }
                                     </div>
                                 </div>
                             </div>

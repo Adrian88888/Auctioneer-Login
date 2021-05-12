@@ -1,5 +1,5 @@
-﻿using Auctioneer.Data;
-using Auctioneer.Models;
+﻿using Database.Data;
+using Database.Models;
 using Auctioneer.Services;
 using Auctioneer.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Database.Repository;
+using Auctioneer.Services.BidsServices;
+using System;
 
 namespace Auctioneer.Controllers
 {
@@ -25,10 +28,12 @@ namespace Auctioneer.Controllers
             {
                 Auctions = new List<AuctionViewModel>()
             };
-            Builder builder = new();
+
             var userID = _userManager.GetUserId(User);
-            var allUserBids = builder.GetAllUserBids(_db, userID);
-            List<Auction> auctions = builder.GetAllAuctions(_db);
+            BidService bidsService = new();
+            var allUserBids = bidsService.GetAllUserBids(_db, userID);
+            AuctionRepository auctionRepo = new(_db);
+            var auctions = auctionRepo.GetAllAuctions();
             foreach (var bid in allUserBids)
             {
                 foreach (var auction in auctions)
@@ -36,8 +41,8 @@ namespace Auctioneer.Controllers
                     if (auction.AuctionID == bid.AuctionID)
                     {
                         AuctionViewModel auctionViewModel = new();
-                       await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
-                        auctionViewModel.UserLastBid = builder.GetUserLastBid(_db, userID, auction.AuctionID);
+                        await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
+                        auctionViewModel.UserLastBid = bidsService.GetUserLastBid(_db, userID, auction.AuctionID);
                         model.Auctions.Add(auctionViewModel);
                     }
                 }
@@ -47,13 +52,15 @@ namespace Auctioneer.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateAsync(int? id)
         {
-            var userID = _userManager.GetUserId(User);
-            Builder builder = new();
-            Auction auction = builder.GetAuctionByID(_db, (int)id);
-            BidViewModel model = await builder.AuctionModelToBidsVMAsync(auction, _userManager);
+            AuctionRepository auctionRepo = new(_db);
+            Auction auction = auctionRepo.GetAuctionByID((int)id);
+            BidViewModel model = new();
+            await model.AuctionModelToBidsVMAsync(auction, _userManager);
             BalanceService balanceService = new(_db);
+            var userID = _userManager.GetUserId(User);
             model.Balance = balanceService.GetUserBalance(userID);
-            model.UserLastBid = builder.GetUserLastBid(_db, userID, (int)id);
+            BidService bidService = new();
+            model.UserLastBid = bidService.GetUserLastBid(_db, userID, (int)id);
 
             return View(model);
         }
@@ -63,8 +70,34 @@ namespace Auctioneer.Controllers
             if (ModelState.IsValid)
             {
                 var userID = _userManager.GetUserId(User);
-                Builder builder = new();
-                Auction auction = builder.GetAuctionByID(_db, (int)id);
+                AuctionRepository auctionRepo = new(_db);
+                Auction auction = auctionRepo.GetAuctionByID((int)id);
+                //if user bid more or equal to the winning bid the auction should end 
+                if (model.Amount >= auction.MaxBid && model.Amount <= model.Balance)
+                {
+                    var userBids = _db.Bids.Where(x => x.UserID == userID).ToList();
+                    var userBid = userBids.FirstOrDefault(x => x.AuctionID == id);
+                    if (userBid != null)
+                    {
+                        userBid.Amount = model.Amount;
+                        auction.CurrentBid = model.Amount;
+                        auction.AuctionWinnerID = userID;
+
+                    }
+                    else
+                    {
+                        Bids bid = new();
+                        auction.CurrentBid = model.Amount;
+                        auction.AuctionWinnerID = userID;
+                        bid.Amount = model.Amount;
+                        bid.UserID = userID;
+                        bid.AuctionID = (int)id;
+                        _db.Bids.Add(bid);
+                    }
+                    auction.ExpiryDate = DateTime.Now;
+                    _db.SaveChanges();
+                    return RedirectToAction("WinningBid");
+                }
                 //check that the bided amount is higher than the min bid/current bid and lower than his current balance
                 if (model.Amount > auction.CurrentBid && model.Amount > auction.MinBid && model.Amount <= model.Balance)
                 {
@@ -108,6 +141,10 @@ namespace Auctioneer.Controllers
                 }
             }
             return View(model);
+        }
+        public IActionResult WinningBid()
+        {
+            return View();
         }
     }
 }

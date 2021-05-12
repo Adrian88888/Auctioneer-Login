@@ -20,7 +20,8 @@
             }
         <form enctype="multipart/form-data" asp-action="AddFunds">
             <input asp-for="Balance" hidden />
-            <span asp-validation-for="Balance" class="text-success"></span>
+
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -31,9 +32,15 @@
                 </div>
             </div>
             <br />
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <span asp-validation-for="Balance" class="text-success"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Add funds   " class="btn btn-success text-uppercase" />
-                <a asp-action="Index" asp-controller="Auction" class="btn btn-danger ">Cancel</a>
+                <a asp-action="Index" asp-controller="Auction" class="btn btn-danger">Back</a>
             </div>
 
 

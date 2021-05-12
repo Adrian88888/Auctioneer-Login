@@ -1,5 +1,6 @@
-﻿using Auctioneer.Data;
-using Auctioneer.Models;
+﻿using Database.Data;
+using Database.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,11 +23,12 @@ namespace Auctioneer.Controllers
             return View(model);
         }
         [HttpGet]
-        public IActionResult CreateBrand()
+        public IActionResult Create()
         {
             return View();
         }
         [HttpPost]
+        [AllowAnonymous]
         public IActionResult Create(CarBrand carBrand)
         {
             _db.CarBrand.Add(carBrand);
@@ -36,9 +38,12 @@ namespace Auctioneer.Controllers
         public IActionResult Delete(int id)
         {
             var carBrand = _db.CarBrand.Where(x => x.CarBrandID == id).FirstOrDefault();
-            _db.Remove(carBrand);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+
+                    _db.Remove(carBrand);
+                    _db.SaveChanges();
+                    return RedirectToAction("Index");
+
+
         }
         [HttpGet]
         public IActionResult Edit(int id)
