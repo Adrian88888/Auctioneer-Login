@@ -27,6 +27,7 @@ namespace Auctioneer.ViewModels
             Title = auction.Title;
             Description = auction.Description;
             CreationDate = auction.CreationDate;
+            ExpiryDate = auction.ExpiryDate;
             Duration = auction.Duration;
             MaxBid = auction.MaxBid;
             MinBid = auction.MinBid;

@@ -5,23 +5,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Auctioneer.Services.BidsServices
+namespace Auctioneer.Services
 {
     public class BidService
     {
-        public int GetUserLastBid(ApplicationDbContext _db, string userID, int auctionID)
+        private readonly ApplicationDbContext _db;
+
+        public BidService(ApplicationDbContext db)
         {
-            List<Bids> bids = _db.Bids.ToList();
-            foreach (var bid in bids)
-            {
-                if (bid.UserID == userID && bid.AuctionID == auctionID)
-                {
-                    return bid.Amount;
-                }
-            }
-            return 0;
+            _db = db;
         }
-        public List<Bids> GetAllUserBids(ApplicationDbContext _db, string userID)
+
+        public Bids GetUserLastBid(string userID, int auctionID)
+        {
+            var  userBids = _db.Bids.Where(b => b.UserID == userID).ToList();
+            var userLastBid = userBids.Where(b => b.AuctionID == auctionID).FirstOrDefault();
+                if (userLastBid != null)
+                {
+                    return userLastBid;
+                }
+
+            return null;
+        }
+        public List<Bids> GetAllUserBids(string userID)
         {
             List<Bids> allUserBids = new();
             List<Bids> bids = _db.Bids.ToList();

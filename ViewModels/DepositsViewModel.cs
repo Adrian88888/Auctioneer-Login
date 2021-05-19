@@ -14,6 +14,7 @@ namespace Auctioneer.ViewModels
         public int Amount { get; set; }
         public int Balance { get; set; }
         public string UserID { get; set; }
+        public string StatusMessage { get; set; }
     }
 
 }

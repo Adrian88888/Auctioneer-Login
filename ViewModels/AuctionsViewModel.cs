@@ -19,30 +19,14 @@ namespace Auctioneer.ViewModels
 
     public class Builder
     {
-  
-        public Auction VMtoAuctionModel (AuctionViewModel auctionViewModel)
-        {
-            Auction auction = new();
-            auction.Duration = (int)auctionViewModel.Duration;
-            auction.Title = auctionViewModel.Title;
-            auction.Description = auctionViewModel.Description;
-            auction.MinBid = (int)auctionViewModel.MinBid;
-            auction.MaxBid = (int)auctionViewModel.MaxBid;
-            auction.CarBrandID = (int)auctionViewModel.CarBrandID;
-            auction.CarTypeID = (int)auctionViewModel.CarTypeID;
-            auction.CreationDate = DateTime.Now;
-            auction.ExpiryDate = auction.CreationDate.AddDays(auction.Duration);
-            auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
-            auction.Gallery = new List<Gallery>();
-
-            return auction;
-        }
-
-      
 
 
 
-     
+
+
+
+
+
 
         public string SaveImageToFile(IWebHostEnvironment _hostEnvironment, IFormFile imageFile)
         {

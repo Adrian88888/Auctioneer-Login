@@ -72,7 +72,7 @@ namespace Auctioneer.Controllers
                 {
                     model.Balance = 0;
                 }
-                ModelState.AddModelError("Balance", "The amount has been added to your account balance!");
+                model.StatusMessage = $"You have added to your account $ {model.Amount} successfully!";
                 return View(model);
             }
 

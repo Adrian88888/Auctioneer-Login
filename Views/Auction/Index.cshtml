@@ -19,7 +19,7 @@
         <div class="container mt-5 mb-5">
             <div class="d-flex justify-content-center row">
                 <div class="col-md-12">
-                    @foreach (var obj in Model.Auctions.OrderByDescending(d => d.CreationDate))
+                    @foreach (var obj in Model.Auctions)
 
                     {
                         <partial name="_AuctionDetailsPartial" for="@obj" />

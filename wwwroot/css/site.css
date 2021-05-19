@@ -6,7 +6,10 @@ a.navbar-brand {
   text-align: center;
   word-break: break-all;
 }
-
+navbar
+{
+    background-color: black;
+}
 /* Provide sufficient contrast against white background */
 a {
   color: #0366d6;
@@ -63,6 +66,8 @@ body {
   margin-bottom: 60px;
 }
 .footer {
+  background-color: black;
+  color: white;
   position: absolute;
   bottom: 0;
   width: 100%;

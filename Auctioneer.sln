@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auctioneer", "Auctioneer.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "..\Database\Database.csproj", "{6B715FC7-75F1-445B-8314-66E8C6AB6AFA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuctionEndEmails", "..\AuctionEndEmails\AuctionEndEmails.csproj", "{7F085A07-CB38-4927-A499-52455F1131B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6B715FC7-75F1-445B-8314-66E8C6AB6AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B715FC7-75F1-445B-8314-66E8C6AB6AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B715FC7-75F1-445B-8314-66E8C6AB6AFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F085A07-CB38-4927-A499-52455F1131B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F085A07-CB38-4927-A499-52455F1131B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F085A07-CB38-4927-A499-52455F1131B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F085A07-CB38-4927-A499-52455F1131B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

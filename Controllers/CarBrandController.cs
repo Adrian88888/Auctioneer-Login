@@ -12,7 +12,7 @@ namespace Auctioneer.Controllers
     public class CarBrandController : Controller
     {
         private readonly ApplicationDbContext _db;
-
+        log4net.ILog logger = log4net.LogManager.GetLogger(typeof(CarBrandController));
         public CarBrandController(ApplicationDbContext db)
         {
             _db = db;
@@ -37,12 +37,19 @@ namespace Auctioneer.Controllers
         }
         public IActionResult Delete(int id)
         {
-            var carBrand = _db.CarBrand.Where(x => x.CarBrandID == id).FirstOrDefault();
+            try
+            {
+                var carBrand = _db.CarBrand.Where(x => x.CarBrandID == id).FirstOrDefault();
 
-                    _db.Remove(carBrand);
-                    _db.SaveChanges();
-                    return RedirectToAction("Index");
-
+                _db.Remove(carBrand);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                return View("Woops");
+            }
 
         }
         [HttpGet]

@@ -1,10 +1,12 @@
 ﻿using Database.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -37,7 +39,6 @@ namespace Auctioneer.ViewModels
         public int? CurrentBid { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpiryDate { get; set; }
-
 
         public string ImageName { get; set; }
         [DisplayName("Upload Image")]
@@ -75,6 +76,30 @@ namespace Auctioneer.ViewModels
             AuctionOwner = user.UserName;
             user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
             AuctionWinner = user != null ? user.UserName : "None";
+        }
+        public void VMtoAuctionModel(Auction auction)
+        {
+            auction.Duration = Duration;
+            auction.Title = Title;
+            auction.Description = Description;
+            auction.MinBid = (int)MinBid;
+            auction.MaxBid = (int)MaxBid;
+            auction.CarBrandID = (int)CarBrandID;
+            auction.CarTypeID = (int)CarTypeID;
+            auction.CreationDate = DateTime.Now;
+            auction.ExpiryDate = DateTime.Now.AddDays(auction.Duration);
+            auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
+            auction.Gallery = new List<Gallery>();
+        }
+        public string SaveImageToFile(IWebHostEnvironment _hostEnvironment, IFormFile imageFile)
+        {
+            string wwwRootPath = _hostEnvironment.WebRootPath;
+            string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
+            string extension = Path.GetExtension(imageFile.FileName);
+            fileName = fileName + DateTime.Now.ToString("ddmmyyyy") + extension;
+            string path = Path.Combine(wwwRootPath + "/Image/", fileName);
+            imageFile.CopyTo(new FileStream(path, FileMode.Create));
+            return fileName;
         }
     }
 }

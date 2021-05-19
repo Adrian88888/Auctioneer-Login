@@ -25,7 +25,7 @@
 <div class="row p-1 bg-white border rounded">
     <div class="col-md-4 mt-2">
         <img class="rounded" style="width:300px" src="@("~/Image/" + Model.Gallery.FirstOrDefault().ImageName)" asp-append-version="true">
-        <div class="alert col-md-11 mt-1 alert-primary" role="alert">
+        <div class="alert col-md-11 mt-1 alert-dark" role="alert">
             Owner: @Model.AuctionOwner
         </div>
         @if (Model.AuctionWinner == User.Identity.Name)
@@ -60,14 +60,21 @@
             <p class="text-danger font-weight-bold">The auction has ended. </p>
         }
 
-        <div class="align-bottom">
+    <div class="align-bottom">
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Details" asp-route-id="@Model.AuctionID">Details</a>
+            <form  asp-controller="Auction" asp-action="Block" asp-route-id="@Model.AuctionID" asp-route-returnUrl="@Context.Request.Path">
+                <input class="btn btn-danger btn-block mt-2" type="submit" value="Block auction" />
+            </form>
+        }
+        else
+        {
             <a class="btn btn-primary btn-block" asp-controller="Auction" asp-action="Details" asp-route-id="@Model.AuctionID">Details</a>
             <a class="btn btn-outline-primary btn-block mt-2" asp-controller="Bids" asp-action="Create" asp-route-id="@Model.AuctionID">Place bid</a>
-            @if (User.IsInRole("Admin"))
-            {
-                <a class="btn btn-danger btn-block" asp-controller="Auction" asp-action="Block" asp-route-id="@Model.AuctionID">Remove auction</a>
-            }
-        </div>
+        }
+    </div>
     </div>
     <div class="col-md-4 border-left mt-2">
         <div class="alert alert-primary" role="alert">

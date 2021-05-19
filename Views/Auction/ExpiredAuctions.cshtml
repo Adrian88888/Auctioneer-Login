@@ -41,7 +41,9 @@
                                         <a class="btn btn-primary btn-sm" asp-controller="Auction" asp-action="Details" asp-route-Id="@obj.AuctionID">Details</a>
                                         @if (User.IsInRole("Admin"))
                                         {
-                                            <a class="btn btn-danger btn-block mt-2" asp-controller="Auction" asp-action="Block" asp-route-id="@obj.AuctionID">Remove auction</a>
+                                            <form asp-controller="Auction" asp-action="Block" asp-route-id="@obj.AuctionID" asp-route-returnUrl="@Context.Request.Path">
+                                                <input class="btn btn-danger btn-block mt-2" type="submit" value="Block auction" />
+                                            </form>                                       
                                         }
                                     </div>
                                 </div>

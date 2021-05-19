@@ -12,99 +12,144 @@ using Database.Repository;
 using Database.Models;
 using Database.Data;
 using Auctioneer.Services;
-using Auctioneer.Services.BidsServices;
 
 namespace Auctioneer.Controllers
 {
     public class AuctionController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IAuctionRepository _auctionRepository;
+        private readonly ICarBrandRepository _carBrandRepository;
+        private readonly ICarTypeRepository _carTypeRepository;
+        private readonly ICarFeaturesRepository _carFeaturesRepository;
+        private readonly BidService _bidService;
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly UserManager<IdentityUser> _userManager;
+        log4net.ILog logger = log4net.LogManager.GetLogger(typeof(AuctionController));
 
-        public AuctionController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment, UserManager<IdentityUser> userManager)
+
+        public AuctionController(BidService bidService, IAuctionRepository auctionRepository, ICarTypeRepository carTypeRepository, ICarBrandRepository carBrandRepository, ICarFeaturesRepository carFeaturesRepository, IWebHostEnvironment hostEnvironment, UserManager<IdentityUser> userManager)
         {
             this._hostEnvironment = hostEnvironment;
             _userManager = userManager;
-            _db = db;
+            _auctionRepository = auctionRepository;
+            _carTypeRepository = carTypeRepository;
+            _carBrandRepository = carBrandRepository;
+            _carFeaturesRepository = carFeaturesRepository;
+            _bidService = bidService;
         }
+
+
+
         [AllowAnonymous]
         public async Task<IActionResult> IndexAsync()
         {
+            logger.Info("Accessing the Index action of the Auction Controller");
             AuctionsViewModel model = new();
             model.Auctions = new List<AuctionViewModel>();
-            AuctionRepository auctionRepo = new(_db);
-            var auctions = auctionRepo.GetAllAuctions();
+
+            var auctions = _auctionRepository.GetLiveAuctions();
 
             foreach (var auction in auctions)
             {
-                if (auction.ExpiryDate > DateTime.Now && auction.IsBlocked != true)
+                if (!auction.IsBlocked)
                 {
                     AuctionViewModel auctionViewModel = new();
                     await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
+
                     var userID = _userManager.GetUserId(User);
-                    BidService bidService = new();
-                    auctionViewModel.UserLastBid = bidService.GetUserLastBid(_db, userID, auction.AuctionID);
+                    var userLastBid = _bidService.GetUserLastBid(userID, auction.AuctionID);
+                    if (userLastBid != null)
+                    {
+                        auctionViewModel.UserLastBid = userLastBid.Amount;
+                    }
+                    else
+                    {
+                        auctionViewModel.UserLastBid = 0;
+                    }
+
                     model.Auctions.Add(auctionViewModel);
                 }
             }
             return View(model);
         }
 
+
+
         public async Task<IActionResult> MyAuctionsAsync()
         {
-            BidService bidService = new();
-            AuctionRepository auctionRepo = new(_db);
+            logger.Info("Accessing MyAuctions");
+
             AuctionsViewModel model = new();
             model.Auctions = new List<AuctionViewModel>();
             var userID = _userManager.GetUserId(User);
-            var userAuctions = auctionRepo.GetAuctionsByOwnerID(userID);
+            var userAuctions = _auctionRepository.GetAuctionsByOwnerID(userID);
+
             foreach (var userAuction in userAuctions)
             {
                 AuctionViewModel auctionViewModel = new();
                 await auctionViewModel.AuctionModelToVMAsync(userAuction, _userManager);
-                auctionViewModel.UserLastBid = bidService.GetUserLastBid(_db, userID, userAuction.AuctionID);
+                var userLastBid = _bidService.GetUserLastBid(userID, userAuction.AuctionID);
+                if (userLastBid != null)
+                {
+                    auctionViewModel.UserLastBid = userLastBid.Amount;
+                }
+                else
+                {
+                    auctionViewModel.UserLastBid = 0;
+                }
+                
                 model.Auctions.Add(auctionViewModel);
             }
+
             return View(model);
         }
+
 
 
         [AllowAnonymous]
         public async Task<IActionResult> ExpiredAuctionsAsync()
         {
+            logger.Info("Accessing ExpiredAuctions");
             AuctionsViewModel model = new();
             model.Auctions = new List<AuctionViewModel>();
 
-            AuctionRepository auctionRepo = new(_db);
-            var auctions = auctionRepo.GetAllAuctions();
-
-            BidService bidService = new();
+            var auctions = _auctionRepository.GetExpiredAuctions();
 
             foreach (var auction in auctions)
             {
-                if (auction.ExpiryDate < DateTime.Now && !auction.IsBlocked)
+                if (!auction.IsBlocked)
                 {
                     AuctionViewModel auctionViewModel = new();
                     await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
                     //load user last bid
                     var userID = _userManager.GetUserId(User);
-                    auctionViewModel.UserLastBid = bidService.GetUserLastBid(_db, userID, auction.AuctionID);
+                    var userLastBid = _bidService.GetUserLastBid(userID, auction.AuctionID);
+                    if (userLastBid != null)
+                    {
+                        auctionViewModel.UserLastBid = userLastBid.Amount;
+                    }
+                    else
+                    {
+                        auctionViewModel.UserLastBid = 0;
+                    }
+
                     model.Auctions.Add(auctionViewModel);
                 }
             }
+
             return View(model);
         }
 
 
+
         public IActionResult Create()
         {
-            CarBrandRepository carBrandRepo = new(_db);
-            CarFeaturesRepository carFeaturesRepo = new(_db);
+            logger.Info("Accessing Create Auction");
+
             AuctionViewModel model = new()
             {
-                Brands = carBrandRepo.GetAllCarBrands(),
-                Features = carFeaturesRepo.GetAllCarFeatures()
+                Brands = _carBrandRepository.GetAllCarBrands(),
+                Features = _carFeaturesRepository.GetAllCarFeatures()
             };
 
             return View(model);
@@ -118,8 +163,9 @@ namespace Auctioneer.Controllers
         {
             if (ModelState.IsValid)
             {
-                Builder builder = new();
-                Auction auction = builder.VMtoAuctionModel(auctionViewModel);
+
+                Auction auction = new();
+                auctionViewModel.VMtoAuctionModel(auction);
 
                 if (auctionViewModel.ImageFiles != null && auctionViewModel.ImageFiles.Count > 0)
                 {
@@ -127,7 +173,7 @@ namespace Auctioneer.Controllers
                     {
                         var gallery = new Gallery
                         {
-                            ImageName = builder.SaveImageToFile(_hostEnvironment, imageFile)
+                            ImageName = auctionViewModel.SaveImageToFile(_hostEnvironment, imageFile)
                         };
                         auction.Gallery.Add(gallery);
                     }
@@ -147,22 +193,31 @@ namespace Auctioneer.Controllers
                     }
                 }
                 auction.AuctionOwnerID = _userManager.GetUserId(User);
-                AuctionRepository auctionRepo = new(_db);
-                auctionRepo.AddAuction(auction);
+
+                _auctionRepository.Add(auction);
+
                 return RedirectToAction("Details", new { id = auction.AuctionID });
             }
-            CarBrandRepository carBrandRepo = new(_db);
-            CarFeaturesRepository carFeaturesRepo = new(_db);
-            auctionViewModel.Brands = carBrandRepo.GetAllCarBrands();
-            auctionViewModel.Features = carFeaturesRepo.GetAllCarFeatures();
+
+            auctionViewModel.Brands = _carBrandRepository.GetAllCarBrands();
+            auctionViewModel.Features = _carFeaturesRepository.GetAllCarFeatures();
+
             return View(auctionViewModel);
         }
+
+
+
         public ActionResult GetTypesByBrand(int id)
         {
-            CarTypeRepository carTypeRepo = new(_db);
-            var types = carTypeRepo.GetTypesByBrand(id);
+            logger.Info($"Getting car types by brand id: {id}");
+
+            var types = _carTypeRepository.GetTypesByBrand(id);
+
             return Json(types);
         }
+
+
+
         [AllowAnonymous]
         public async Task<IActionResult> DetailsAsync(int? id)
         {
@@ -171,35 +226,43 @@ namespace Auctioneer.Controllers
                 return NotFound();
             }
 
-            AuctionRepository auctionRepo = new(_db);
-            Auction auction = auctionRepo.GetAuctionByID((int)id);
+            Auction auction = _auctionRepository.GetAuction((int)id);
             AuctionViewModel model = new();
             await model.AuctionModelToVMAsync(auction, _userManager);
             model.Features = new List<CarFeatures>();
-            CarFeaturesRepository carFeaturesRepo = new(_db);
+
             foreach (var auctionCarFeature in model.AuctionCarFeatures)
             {
-                CarFeatures feature = carFeaturesRepo.GetCarFeatureById(_db, auctionCarFeature.CarFeaturesID);
+                CarFeatures feature = _carFeaturesRepository.GetCarFeatureById(auctionCarFeature.CarFeaturesID);
                 if (feature != null)
                 {
                     model.Features.Add(feature);
                 }
 
             }
-            BidService bidService = new();
+
             var userID = _userManager.GetUserId(User);
-            model.UserLastBid = bidService.GetUserLastBid(_db, userID, (int)id);
+            var userLastBid = _bidService.GetUserLastBid(userID, (int)id);
+            if (userLastBid != null)
+            {
+                model.UserLastBid = userLastBid.Amount;
+            }
+            else
+            {
+                model.UserLastBid = 0;
+            }
 
             return View(model);
         }
         [Authorize(Roles = "Admin")]
-        public IActionResult Block(int id)
+        [HttpPost]
+        public IActionResult Block(int id, string returnUrl)
         {
-            var auction = _db.Auction.Where(a => a.AuctionID == id).FirstOrDefault();
+            var auction = _auctionRepository.GetAuction(id); 
             auction.IsBlocked = true;
-            _db.SaveChanges();
+            _auctionRepository.Save();
 
-            return RedirectToAction("Index");
+            return Redirect(returnUrl);
         }
     }
 }

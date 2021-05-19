@@ -1,5 +1,4 @@
 using Auctioneer.Services;
-using Auctioneer.Services.EmailServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Auctioneer
 {
@@ -23,8 +23,7 @@ namespace Auctioneer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<BalanceService>();
-            services.AddTransient<EmailSender>();
+           
             services.AddDbContext<Database.Data.ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -35,6 +34,7 @@ namespace Auctioneer
                 options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
+                options.SignIn.RequireConfirmedEmail = true;
             })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<Database.Data.ApplicationDbContext>();
@@ -44,6 +44,14 @@ namespace Auctioneer
                 // This pushes users to login if not authenticated
                 options.Filters.Add(new AuthorizeFilter());
             });
+            services.AddScoped<Database.Repository.IAuctionRepository, Database.Repository.AuctionRepository>();
+            services.AddScoped<Database.Repository.IBidRepository, Database.Repository.BidRepository>();
+            services.AddScoped<Database.Repository.ICarBrandRepository, Database.Repository.CarBrandRepository>();
+            services.AddScoped<Database.Repository.ICarFeaturesRepository, Database.Repository.CarFeaturesRepository>();
+            services.AddScoped<Database.Repository.ICarTypeRepository, Database.Repository.CarTypeRepository>();
+            services.AddScoped<BidService>();
+            services.AddScoped<BalanceService>();
+            services.AddScoped<EmailSender>();
             services.AddAuthorization(options => {
                 options.AddPolicy("readpolicy",
                     builder => builder.RequireRole("Admin", "Manager"));
@@ -55,6 +63,7 @@ namespace Auctioneer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

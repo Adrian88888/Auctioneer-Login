@@ -23,8 +23,19 @@
             @foreach (var role in Model)
             {
                 <tr>
-                    <td>@role.Name</td>
-                    <td><a class="btn btn-danger float-right text-white" onclick="ConfirmDelete(@role.Id)">Delete</a></td>
+                    <td>
+                        @if (role.Name == "Admin")
+                        {
+                            <span class="badge badge-danger">Admin</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-warning"> @role.Name</span>
+                        }
+
+
+                    </td>
+                    <td><a class="btn btn-danger float-right text-white" onclick="ConfirmDelete('@role.Id')">Delete</a></td>
                 </tr>
 
 
@@ -58,10 +69,10 @@
     <script>
 
         var ConfirmDelete = function (Id) {
-
+            debugger;
             $("#myModal").modal('show');
             $("#hiddenId").val(Id);
-          
+
 
         }
 
@@ -81,6 +92,7 @@
                 }
             })
         }
+
     </script>
 }
 
