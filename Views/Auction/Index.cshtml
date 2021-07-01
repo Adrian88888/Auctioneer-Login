@@ -4,16 +4,55 @@
 
 }
 <div class="container p-3">
+
     <div class="row pt-4">
-        <div class="col-6">
+        <div class="col-sm">
             <h2 class="text-dark">Live Auctions</h2>
         </div>
-        <div class="col-6">
-            <a asp-action="ExpiredAuctions" class="btn btn-primary float-right"> Finished auctions </a>
+
+
+        <div class="col-sm">
+            <a asp-action="ExpiredAuctions" class="btn btn-primary float-right"> Last 7 days finished auctions </a>
         </div>
     </div>
-    <br /><br />
+    <div class="row">
+        <div class="col align-self-auto">
 
+            <form class="form-inline my-2 my-lg-0" asp-controller="Auction" asp-action="Index">
+
+                Filter by brand:
+                <select class="form-control mr-sm-2" onchange="this.form.submit()" asp-for="carBrand">
+                    <option value="">Show all brands</option>
+                    @foreach (var brand in Model.Brands)
+                    {
+                        <option value="@brand.Brand">@brand.Brand </option>
+                    }
+                </select>
+
+                Sort by:
+                <select class="form-control mr-sm-2" onchange="this.form.submit()" asp-for="sortBy">
+                    <option value="expiry">Expiry Date</option>
+                    <option value="creation">Creation Date</option>
+                    <option value="max_bid">Winning bid</option>
+                    <option value="min_bid">Starting bid</option>
+                </select>
+
+                Sort:
+                <select class="form-control mr-sm-2" onchange="this.form.submit()" asp-for="sort">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+
+            </form>
+        </div>
+
+
+    </div>
+</div>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<br />
+<br />
+<div>
     @if (Model.Auctions.Count() > 0)
     {
         <div class="container mt-5 mb-5">
@@ -28,11 +67,4 @@
             </div>
         </div>
     }
-    else
-    {
-        <p>There are no active auctions at the moment.</p>
-    }
-
 </div>
-
-

@@ -1,0 +1,44 @@
+﻿@model Auctioneer.ViewModels.AuctionsByCreationDateViewModel
+
+@{
+    ViewData["Title"] = "Auctions By Creation Date";
+}
+<partial name="_ReportsHeaderPartial" />
+
+<h1>Auctions By Creation Date</h1>
+
+<form asp-action="AuctionsByCreationDate" asp-controller="Reports">
+    <input type="date" name="startDate" />
+    <input type="date" name="endDate" />
+    <input class="btn btn-primary" type="submit" value="Show auctions count" />
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AuctionCount)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Model.StartDate.Date.ToShortDateString()
+            </td>
+            <td>
+                @Model.EndDate.Date.ToShortDateString()
+            </td>
+            <td>
+                @Html.DisplayFor(Model => Model.AuctionCount)
+            </td>
+        </tr>
+    </tbody>
+</table>

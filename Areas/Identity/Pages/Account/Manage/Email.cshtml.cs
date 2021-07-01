@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Auctioneer.Services;
+using Services;
 
 namespace Auctioneer.Areas.Identity.Pages.Account.Manage
 {

@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Auctioneer.Services
+@using Services
 @inject BalanceService balance
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
@@ -14,7 +14,7 @@
         @if (!User.IsInRole("Admin"))
         {
             <li class="nav-item dropdown ml-auto">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     @User.Identity.Name <i class="far fa-user"></i>
                 </a>
                 <div class="dropdown-menu " aria-labelledby="navbarDropdown">
@@ -26,7 +26,7 @@
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-light" asp-area="" asp-controller="Deposits" asp-action="AddFunds">Balance: $ @Convert.ToDecimal(userBalance).ToString("#,##0.00")</a>
+                <a class="nav-link text-light" asp-area="" asp-controller="Deposits" asp-action="AddFunds"><i class="fas fa-dollar-sign"></i> @Convert.ToDecimal(userBalance).ToString("#,##0.00")</a>
             </li>
         }
         else
@@ -38,7 +38,7 @@
         }
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button type="submit" class="nav-link btn btn-link text-light">Logout 	&nbsp;<i class="fas fa-sign-out-alt"></i></button>
+                <button type="submit" class="nav-link btn btn-link text-light"><i class="fas fa-sign-out-alt"></i>Logout</button>
             </form>
         </li>
     }

@@ -1,6 +1,6 @@
 ﻿using Database.Data;
 using Database.Models;
-using Auctioneer.Services;
+using Services;
 using Auctioneer.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

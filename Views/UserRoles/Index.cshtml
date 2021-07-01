@@ -21,7 +21,19 @@
             {
                 <tr>
                     <td>@user.Email</td>
-                    <td>@string.Join(" , ", user.Roles.ToList())</td>
+                    <td>
+                        @foreach (var role in user.Roles)
+                        {
+                            @if (role == "Admin")
+                            {
+                                <span class="badge badge-danger">Admin</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning"> @role</span>
+                            }
+                        }
+                    </td>
                     <td>
                         <a class="btn btn-primary float-right" asp-controller="UserRoles" asp-action="Manage" asp-route-userId="@user.UserId">Manage Roles</a>
                     </td>
@@ -29,4 +41,4 @@
             }
         </tbody>
     </table>
-    </div>
+</div>

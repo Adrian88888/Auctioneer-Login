@@ -1,0 +1,13 @@
+﻿<div class="row pt-4">
+    <div class="col-6">
+        <h2 class="text-dark">Reports</h2>
+    </div>
+</div>
+<br />
+<br />
+
+<div class="row">
+    <a class="btn  btn-primary text-light" asp-controller="Reports" asp-action="AuctionsByBrand" id="defaultOpen">Auctions by brand</a> &nbsp;
+    <a class="btn  btn-primary text-light" asp-controller="Reports" asp-action="AuctionsByCreationDate" asp-route-startDate="@DateTime.Now" asp-route-endDate="@DateTime.Now">Auctions by creation date</a> &nbsp;
+    <a class="btn  btn-primary text-light" asp-controller="Reports" asp-action="AuctionsByMonth" >Auctions by month</a> &nbsp;
+</div>

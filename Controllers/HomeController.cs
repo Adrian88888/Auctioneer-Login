@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using Database.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace WebApplication2.Controllers
 {
@@ -26,7 +27,10 @@ namespace WebApplication2.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            logger.Error($"The path {exceptionDetails.Path} threw an exception: {exceptionDetails.Error}");
+
+            return View();
         }
     }
 }

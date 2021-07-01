@@ -1,0 +1,45 @@
+﻿@model Auctioneer.ViewModels.AuctionByMonthViewModel
+
+@{
+    ViewData["Title"] = "Auctions By Month";
+}
+<partial name="_ReportsHeaderPartial" />
+
+<h1>Auctions By Month</h1>
+
+<form asp-action="AuctionsByMonth" asp-controller="Reports">
+    <input type="month" name="startDate" />
+    <input class="btn btn-primary" type="submit" value="Show monthly reports" />
+</form>
+
+<table class="table">
+    <caption style="caption-side:top; ">
+        @Model.Period.ToString("MMMM")
+    </caption>
+
+    <thead>
+        <tr>
+            <th>
+                Brand
+            </th>
+            <th>
+                Auction Count
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var brand in Model.AuctionsByBrand)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelBrand => brand.Brand)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelBrand => brand.Number)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

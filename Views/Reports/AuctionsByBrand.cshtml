@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Auctioneer.ViewModels.AuctionByBrandViewModel>
+
+@{
+    ViewData["Title"] = "AuctionsByBrand";
+}
+
+<partial name="_ReportsHeaderPartial" />
+
+<h1>Auctions By Brand</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Brand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Number)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Number)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

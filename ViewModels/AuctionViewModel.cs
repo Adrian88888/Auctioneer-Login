@@ -59,7 +59,18 @@ namespace Auctioneer.ViewModels
         public List<AuctionCarFeatures> AuctionCarFeatures { get; internal set; }
         public async Task AuctionModelToVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
         { 
-            Gallery = auction.Gallery;
+            if(auction.Gallery.Count() > 0)
+            {
+                Gallery = auction.Gallery;
+            }
+            else
+            {
+                Gallery dummy = new();
+                dummy.ImageName = "dummy.jpg";
+                List<Gallery> dummyGallery = new();
+                dummyGallery.Add(dummy);
+                Gallery = dummyGallery;
+            }
             AuctionID = auction.AuctionID;
             Title = auction.Title;
             Description = auction.Description;
@@ -73,7 +84,15 @@ namespace Auctioneer.ViewModels
             Type = auction.CarType.Type;
             AuctionCarFeatures = auction.AuctionCarFeatures;
             var user = await _userManager.FindByIdAsync(auction.AuctionOwnerID);
-            AuctionOwner = user.UserName;
+            if (user != null)
+            {
+                AuctionOwner = user.UserName;
+            }
+            else
+            {
+                auction.IsBlocked = true;
+            }
+           
             user = await _userManager.FindByIdAsync(auction.AuctionWinnerID);
             AuctionWinner = user != null ? user.UserName : "None";
         }

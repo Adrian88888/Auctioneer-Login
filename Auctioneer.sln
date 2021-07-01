@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "..\Database\Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuctionEndEmails", "..\AuctionEndEmails\AuctionEndEmails.csproj", "{7F085A07-CB38-4927-A499-52455F1131B7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuctioneerAPI", "..\AuctioneerAPI\AuctioneerAPI.csproj", "{538D455A-A544-4846-8A09-FF7BE8AC29B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "..\Services\Services.csproj", "{5795F42C-8A0C-4573-B361-25BAE0BB4B67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{7F085A07-CB38-4927-A499-52455F1131B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F085A07-CB38-4927-A499-52455F1131B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F085A07-CB38-4927-A499-52455F1131B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{538D455A-A544-4846-8A09-FF7BE8AC29B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{538D455A-A544-4846-8A09-FF7BE8AC29B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{538D455A-A544-4846-8A09-FF7BE8AC29B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{538D455A-A544-4846-8A09-FF7BE8AC29B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5795F42C-8A0C-4573-B361-25BAE0BB4B67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5795F42C-8A0C-4573-B361-25BAE0BB4B67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5795F42C-8A0C-4573-B361-25BAE0BB4B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5795F42C-8A0C-4573-B361-25BAE0BB4B67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

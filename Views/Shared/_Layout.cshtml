@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/fontawesome/css/all.css" />
+
 </head>
 <body>
     <header>
@@ -25,6 +26,9 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Admin" asp-action="Index">Administration</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Reports" asp-action="Index">Reports</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Auction" asp-action="Index">Auctions</a>
                             </li>
                         }
@@ -39,9 +43,26 @@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Auction" asp-action="Create">New Auction</a>
                             </li>
+
+                            @if (ViewContext.RouteData.Values["Controller"] != null)
+                            {
+                                @if (ViewContext.RouteData.Values["Controller"].ToString() == "Auction" && ViewContext.RouteData.Values["Action"].ToString() == "Index")
+                                {
+                                    <li>
+                                        <form class="form-inline" asp-action="Index" asp-controller="Auction">
+                                            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="searchInput">
+
+                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
+                                        </form>
+                                    </li>
+
+                                }
+                            }
+
                         }
 
                     </ul>
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>

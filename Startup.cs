@@ -1,4 +1,4 @@
-using Auctioneer.Services;
+using Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -67,6 +67,7 @@ namespace Auctioneer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //app.UseExceptionHandler("/Home/Error");
                 app.UseMigrationsEndPoint();
             }
             else
@@ -87,7 +88,7 @@ namespace Auctioneer
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Auction}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

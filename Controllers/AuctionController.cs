@@ -10,8 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Database.Repository;
 using Database.Models;
-using Database.Data;
-using Auctioneer.Services;
+using Auctioneer;
+using Services;
 
 namespace Auctioneer.Controllers
 {
@@ -38,47 +38,124 @@ namespace Auctioneer.Controllers
             _bidService = bidService;
         }
 
-
-
         [AllowAnonymous]
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> IndexAsync(string searchInput, string carBrand, string sort, string sortBy)
         {
             logger.Info("Accessing the Index action of the Auction Controller");
             AuctionsViewModel model = new();
+
+            model.Brands = _carBrandRepository.GetAllCarBrands();
             model.Auctions = new List<AuctionViewModel>();
 
-            var auctions = _auctionRepository.GetLiveAuctions();
+            List<Auction> auctions = new();
 
-            foreach (var auction in auctions)
+            if (!String.IsNullOrEmpty(searchInput))
             {
-                if (!auction.IsBlocked)
+                auctions = _auctionRepository.GetLiveAuctionsByKeyword(searchInput);
+                if (auctions.Count() > 0)
                 {
-                    AuctionViewModel auctionViewModel = new();
-                    await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
+                    model.StatusMessage = "Showing the auctions that contain '" + searchInput + "' within the title or description.";
+                }
+                else
+                {
+                    model.StatusMessage = "There are no auctions that contain '" + searchInput + "' within the title or description.";
+                }
 
-                    var userID = _userManager.GetUserId(User);
-                    var userLastBid = _bidService.GetUserLastBid(userID, auction.AuctionID);
-                    if (userLastBid != null)
-                    {
-                        auctionViewModel.UserLastBid = userLastBid.Amount;
-                    }
-                    else
-                    {
-                        auctionViewModel.UserLastBid = 0;
-                    }
+            }
+            else
+            {
+                auctions = _auctionRepository.GetLiveAuctions();
+            }
 
-                    model.Auctions.Add(auctionViewModel);
+
+            if (!String.IsNullOrEmpty(carBrand))
+            {
+                var brandID = _carBrandRepository.GetBrandID(carBrand);
+                auctions = auctions.Where(a => a.CarBrandID == brandID).ToList();
+                if (auctions.Count() > 0)
+                {
+                    model.StatusMessage = "Showing the live auctions for the brand: '" + carBrand;
+                }
+                else
+                {
+                    model.StatusMessage = "There are no live auctions for the brand: " + carBrand + " at the moment.";
+                }
+
+            }
+
+            if (auctions != null)
+            {
+                if (sort == "asc")
+                {
+                    switch (sortBy)
+                    {
+                        case "expiry":
+                            auctions = auctions.OrderBy(a => a.ExpiryDate).ToList();
+                            break;
+                        case "min_bid":
+                            auctions = auctions.OrderBy(a => a.MinBid).ToList();
+                            break;
+                        case "max_bid":
+                            auctions = auctions.OrderBy(a => a.MaxBid).ToList();
+                            break;
+                        default:
+                            auctions = auctions.OrderBy(a => a.CreationDate).ToList();
+                            break;
+                    }
+                   
+                }
+                else
+                {
+                    switch (sortBy)
+                    {
+                        case "expiry":
+                            auctions = auctions.OrderByDescending(a => a.ExpiryDate).ToList();
+                            break;
+                        case "min_bid":
+                            auctions = auctions.OrderByDescending(a => a.MinBid).ToList();
+                            break;
+                        case "max_bid":
+                            auctions = auctions.OrderByDescending(a => a.MaxBid).ToList();
+                            break;
+                        default:
+                            auctions = auctions.OrderByDescending(a => a.CreationDate).ToList();
+                            break;
+                    }
+                }
+
+                foreach (var auction in auctions)
+                {
+                    if (!auction.IsBlocked)
+                    {
+                        AuctionViewModel auctionViewModel = new();
+                        await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
+
+                        var userID = _userManager.GetUserId(User);
+                        var userLastBid = _bidService.GetUserLastBid(userID, auction.AuctionID);
+                        if (userLastBid != null)
+                        {
+                            auctionViewModel.UserLastBid = userLastBid.Amount;
+                        }
+                        else
+                        {
+                            auctionViewModel.UserLastBid = 0;
+                        }
+
+                        model.Auctions.Add(auctionViewModel);
+                    }
                 }
             }
+            else
+            {
+                model.StatusMessage = "There are no active auctions at the moment. Please try again later.";
+            }
+
             return View(model);
         }
-
-
 
         public async Task<IActionResult> MyAuctionsAsync()
         {
             logger.Info("Accessing MyAuctions");
-
             AuctionsViewModel model = new();
             model.Auctions = new List<AuctionViewModel>();
             var userID = _userManager.GetUserId(User);
@@ -97,7 +174,7 @@ namespace Auctioneer.Controllers
                 {
                     auctionViewModel.UserLastBid = 0;
                 }
-                
+
                 model.Auctions.Add(auctionViewModel);
             }
 
@@ -258,7 +335,7 @@ namespace Auctioneer.Controllers
         [HttpPost]
         public IActionResult Block(int id, string returnUrl)
         {
-            var auction = _auctionRepository.GetAuction(id); 
+            var auction = _auctionRepository.GetAuction(id);
             auction.IsBlocked = true;
             _auctionRepository.Save();
 

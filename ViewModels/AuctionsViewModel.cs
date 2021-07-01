@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,11 @@ namespace Auctioneer.ViewModels
     public class AuctionsViewModel
     {
         public List<AuctionViewModel> Auctions { get; set; }
+        public List<CarBrand> Brands { get; set; }
+        public string carBrand { get; set; }
+        public string StatusMessage { get; set; }
+        public string sort { get; set; }
+        public string sortBy { get; set; }
     }
 
     public class Builder
