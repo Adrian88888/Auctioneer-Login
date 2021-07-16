@@ -20,17 +20,20 @@ namespace Auctioneer.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly EmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+        UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             EmailSender emailSender)
         {
+            _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
@@ -82,7 +85,23 @@ namespace Auctioneer.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+
+                    bool adminRoleExists = await _roleManager.RoleExistsAsync("Admin");
+                    if (!adminRoleExists)
+                    {
+                        _logger.LogInformation("Adding Admin role");
+                        await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                    }
+
+                    bool userRoleExists = await _roleManager.RoleExistsAsync("User");
+                    if (!userRoleExists)
+                    {
+                        _logger.LogInformation("Adding User role");
+                        await _roleManager.CreateAsync(new IdentityRole("User"));
+                    }
+
                     await _userManager.AddToRoleAsync(user, "User");
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(

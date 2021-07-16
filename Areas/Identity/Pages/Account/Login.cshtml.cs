@@ -17,15 +17,12 @@ namespace Auctioneer.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
         public LoginModel(SignInManager<IdentityUser> signInManager, 
-            ILogger<LoginModel> logger,
-            UserManager<IdentityUser> userManager)
+            ILogger<LoginModel> logger)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -89,7 +86,9 @@ namespace Auctioneer.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
+#pragma warning disable IDE0037 // Use inferred member name
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+#pragma warning restore IDE0037 // Use inferred member name
                 }
                 if (result.IsLockedOut)
                 {

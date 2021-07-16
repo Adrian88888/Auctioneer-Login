@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace Auctioneer.ViewModels
 {
-    public class AuctionsByMonthViewModel
+    public class AuctionsByYearViewModel
     {
-
-        List<AuctionByMonthViewModel> AuctionsByMonth { get; set; }
+        public List<AuctionByMonthViewModel> AuctionsByYear { get; set; }
     }
 }

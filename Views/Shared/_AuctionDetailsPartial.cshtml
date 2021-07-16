@@ -24,7 +24,7 @@
 </script>
 <div class="row p-1 bg-white border rounded">
     <div class="col-md-4 mt-2">
-        <img class="rounded" style="width:300px" src="@("~/Image/" + Model.Gallery.FirstOrDefault().ImageName)" asp-append-version="true">
+        <img class="rounded" style="width:300px" src="data:image;base64,@System.Convert.ToBase64String(Model.Gallery.FirstOrDefault().Image)" asp-append-version="true">
         <div class="alert col-md-11 mt-1 alert-dark" role="alert">
             Owner: @Model.AuctionOwner
         </div>

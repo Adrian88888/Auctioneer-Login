@@ -12,6 +12,7 @@ using Database.Repository;
 using Database.Models;
 using Auctioneer;
 using Services;
+using System.IO;
 
 namespace Auctioneer.Controllers
 {
@@ -52,7 +53,7 @@ namespace Auctioneer.Controllers
             if (!String.IsNullOrEmpty(searchInput))
             {
                 auctions = _auctionRepository.GetLiveAuctionsByKeyword(searchInput);
-                if (auctions.Count() > 0)
+                if (auctions.Count > 0)
                 {
                     model.StatusMessage = "Showing the auctions that contain '" + searchInput + "' within the title or description.";
                 }
@@ -72,7 +73,7 @@ namespace Auctioneer.Controllers
             {
                 var brandID = _carBrandRepository.GetBrandID(carBrand);
                 auctions = auctions.Where(a => a.CarBrandID == brandID).ToList();
-                if (auctions.Count() > 0)
+                if (auctions.Count > 0)
                 {
                     model.StatusMessage = "Showing the live auctions for the brand: '" + carBrand;
                 }
@@ -87,40 +88,23 @@ namespace Auctioneer.Controllers
             {
                 if (sort == "asc")
                 {
-                    switch (sortBy)
+                    auctions = sortBy switch
                     {
-                        case "expiry":
-                            auctions = auctions.OrderBy(a => a.ExpiryDate).ToList();
-                            break;
-                        case "min_bid":
-                            auctions = auctions.OrderBy(a => a.MinBid).ToList();
-                            break;
-                        case "max_bid":
-                            auctions = auctions.OrderBy(a => a.MaxBid).ToList();
-                            break;
-                        default:
-                            auctions = auctions.OrderBy(a => a.CreationDate).ToList();
-                            break;
-                    }
-                   
+                        "expiry" => auctions.OrderBy(a => a.ExpiryDate).ToList(),
+                        "min_bid" => auctions.OrderBy(a => a.MinBid).ToList(),
+                        "max_bid" => auctions.OrderBy(a => a.MaxBid).ToList(),
+                        _ => auctions.OrderBy(a => a.CreationDate).ToList(),
+                    };
                 }
                 else
                 {
-                    switch (sortBy)
+                    auctions = sortBy switch
                     {
-                        case "expiry":
-                            auctions = auctions.OrderByDescending(a => a.ExpiryDate).ToList();
-                            break;
-                        case "min_bid":
-                            auctions = auctions.OrderByDescending(a => a.MinBid).ToList();
-                            break;
-                        case "max_bid":
-                            auctions = auctions.OrderByDescending(a => a.MaxBid).ToList();
-                            break;
-                        default:
-                            auctions = auctions.OrderByDescending(a => a.CreationDate).ToList();
-                            break;
-                    }
+                        "expiry" => auctions.OrderByDescending(a => a.ExpiryDate).ToList(),
+                        "min_bid" => auctions.OrderByDescending(a => a.MinBid).ToList(),
+                        "max_bid" => auctions.OrderByDescending(a => a.MaxBid).ToList(),
+                        _ => auctions.OrderByDescending(a => a.CreationDate).ToList(),
+                    };
                 }
 
                 foreach (var auction in auctions)
@@ -236,7 +220,7 @@ namespace Auctioneer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(AuctionViewModel auctionViewModel)
+        public async Task<IActionResult> CreateAsync(AuctionViewModel auctionViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -244,17 +228,22 @@ namespace Auctioneer.Controllers
                 Auction auction = new();
                 auctionViewModel.VMtoAuctionModel(auction);
 
-                if (auctionViewModel.ImageFiles != null && auctionViewModel.ImageFiles.Count > 0)
+
+                foreach (var image in auctionViewModel.ImageFiles)
                 {
-                    foreach (IFormFile imageFile in auctionViewModel.ImageFiles)
+                    if (image.Length > 0)
                     {
-                        var gallery = new Gallery
+                        using (var stream = new MemoryStream())
                         {
-                            ImageName = auctionViewModel.SaveImageToFile(_hostEnvironment, imageFile)
-                        };
-                        auction.Gallery.Add(gallery);
+                            await image.CopyToAsync(stream);
+                            Gallery convertedImage = new();
+                            convertedImage.Image = stream.ToArray();
+                            auction.Gallery.Add(convertedImage);
+                        }
                     }
                 }
+
+
                 if (auctionViewModel.Features != null && auctionViewModel.Features.Count > 0)
                 {
                     foreach (var feature in auctionViewModel.Features)
@@ -306,6 +295,26 @@ namespace Auctioneer.Controllers
             Auction auction = _auctionRepository.GetAuction((int)id);
             AuctionViewModel model = new();
             await model.AuctionModelToVMAsync(auction, _userManager);
+
+            //model.ImageFiles = new List<IFormFile>();
+
+            //foreach ( var byteImage in model.Gallery)
+            //{
+            //    using ( var stream = new MemoryStream(byteImage.Image))
+            //    {
+            //        var convertedImage = Image
+            //    }
+            //    MemoryStream ms = new MemoryStream(source);
+            //    Image ret = Image.FromStream(ms);
+            //    return ret;
+            //    using (var stream = new MemoryStream())
+            //    {
+            //        await image.CopyToAsync(stream);
+            //        Gallery convertedImage = new();
+            //        convertedImage.Image = stream.ToArray();
+            //        auction.Gallery.Add(convertedImage);
+            //    }
+            //}
             model.Features = new List<CarFeatures>();
 
             foreach (var auctionCarFeature in model.AuctionCarFeatures)

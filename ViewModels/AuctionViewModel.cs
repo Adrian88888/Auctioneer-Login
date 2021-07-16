@@ -22,7 +22,7 @@ namespace Auctioneer.ViewModels
         public int UserLastBid { get; set; }
 
         [Required(ErrorMessage = "Duration is required")]
-        public int Duration { get; set; }
+        public int? Duration { get; set; }
 
         [Required(ErrorMessage = "Title is required")]
         public string Title { get; set; }
@@ -39,8 +39,6 @@ namespace Auctioneer.ViewModels
         public int? CurrentBid { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpiryDate { get; set; }
-
-        public string ImageName { get; set; }
         [DisplayName("Upload Image")]
         [Required(ErrorMessage = "Car image is required")]
         public List<IFormFile> ImageFiles { get; set; }
@@ -57,19 +55,21 @@ namespace Auctioneer.ViewModels
         public List<Gallery> Gallery { get; set; }
         public List<CarFeatures> Features { get; set; }
         public List<AuctionCarFeatures> AuctionCarFeatures { get; internal set; }
+
+
         public async Task AuctionModelToVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
         { 
-            if(auction.Gallery.Count() > 0)
+            if(auction.Gallery.Count > 0)
             {
                 Gallery = auction.Gallery;
             }
             else
             {
-                Gallery dummy = new();
-                dummy.ImageName = "dummy.jpg";
-                List<Gallery> dummyGallery = new();
-                dummyGallery.Add(dummy);
-                Gallery = dummyGallery;
+                //Gallery dummy = new();
+                //dummy.ImageName = "dummy.jpg";
+                //List<Gallery> dummyGallery = new();
+                //dummyGallery.Add(dummy);
+                //Gallery = dummyGallery;
             }
             AuctionID = auction.AuctionID;
             Title = auction.Title;
@@ -98,7 +98,7 @@ namespace Auctioneer.ViewModels
         }
         public void VMtoAuctionModel(Auction auction)
         {
-            auction.Duration = Duration;
+            auction.Duration = (int)Duration;
             auction.Title = Title;
             auction.Description = Description;
             auction.MinBid = (int)MinBid;
@@ -109,16 +109,6 @@ namespace Auctioneer.ViewModels
             auction.ExpiryDate = DateTime.Now.AddDays(auction.Duration);
             auction.AuctionCarFeatures = new List<AuctionCarFeatures>();
             auction.Gallery = new List<Gallery>();
-        }
-        public string SaveImageToFile(IWebHostEnvironment _hostEnvironment, IFormFile imageFile)
-        {
-            string wwwRootPath = _hostEnvironment.WebRootPath;
-            string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
-            string extension = Path.GetExtension(imageFile.FileName);
-            fileName = fileName + DateTime.Now.ToString("ddmmyyyy") + extension;
-            string path = Path.Combine(wwwRootPath + "/Image/", fileName);
-            imageFile.CopyTo(new FileStream(path, FileMode.Create));
-            return fileName;
         }
     }
 }

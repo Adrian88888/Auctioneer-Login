@@ -9,5 +9,6 @@
 <div class="row">
     <a class="btn  btn-primary text-light" asp-controller="Reports" asp-action="AuctionsByBrand" id="defaultOpen">Auctions by brand</a> &nbsp;
     <a class="btn  btn-primary text-light" asp-controller="Reports" asp-action="AuctionsByCreationDate" asp-route-startDate="@DateTime.Now" asp-route-endDate="@DateTime.Now">Auctions by creation date</a> &nbsp;
-    <a class="btn  btn-primary text-light" asp-controller="Reports" asp-action="AuctionsByMonth" >Auctions by month</a> &nbsp;
+    <a class="btn  btn-primary text-light" asp-controller="Reports" asp-action="AuctionsByMonth">Auctions by month</a> &nbsp;
+    <a class="btn  btn-primary text-light" asp-controller="Reports" asp-action="AuctionsByYear" asp-route-startYear="@DateTime.Now">Auctions by year</a> &nbsp;
 </div>

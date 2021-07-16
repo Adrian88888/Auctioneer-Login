@@ -7,6 +7,6 @@ namespace Auctioneer.ViewModels
     public class AuctionByMonthViewModel
     {
         public List<AuctionByBrandViewModel> AuctionsByBrand { get; set; }
-        public DateTime Period { get; set; }
+        public DateTime SelectedMonth { get; set; }
     }
 }

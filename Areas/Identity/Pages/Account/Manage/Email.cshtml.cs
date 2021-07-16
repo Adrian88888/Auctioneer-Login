@@ -13,16 +13,13 @@ namespace Auctioneer.Areas.Identity.Pages.Account.Manage
     public partial class EmailModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly EmailSender _emailSender;
 
         public EmailModel(
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
             EmailSender emailSender)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _emailSender = emailSender;
         }
 

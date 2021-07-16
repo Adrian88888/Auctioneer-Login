@@ -1,20 +1,24 @@
-﻿@model Auctioneer.ViewModels.AuctionByMonthViewModel
+﻿@model Auctioneer.ViewModels.AuctionsByYearViewModel
 
 @{
-    ViewData["Title"] = "Auctions By Month";
+    ViewData["Title"] = "Auctions By Year";
 }
 <partial name="_ReportsHeaderPartial" />
 
 <h1>Auctions By Month</h1>
 
-<form asp-action="AuctionsByMonth" asp-controller="Reports">
-    <input type="month" name="startDate" />
-    <input class="btn btn-primary" type="submit" value="Show monthly reports" />
+<form asp-action="AuctionsByYear" asp-controller="Reports">
+    <input type="month" name="startYear" />
+    <input class="btn btn-primary" type="submit" value="Show Yearly reports" />
 </form>
-
+@foreach (var month in Model.AuctionsByYear)
+{
 <table class="table">
     <caption style="caption-side:top; ">
-        @Model.SelectedMonth.ToString("MMMM")
+        @month.SelectedMonth.ToString("MMMM")
+    </caption>
+    <caption style="caption-side:top; ">
+        @month.SelectedMonth.ToString("yyyy")
     </caption>
 
     <thead>
@@ -30,7 +34,7 @@
     </thead>
     <tbody>
 
-        @foreach (var brand in Model.AuctionsByBrand)
+        @foreach (var brand in month.AuctionsByBrand)
         {
             <tr>
                 <td>
@@ -43,3 +47,4 @@
         }
     </tbody>
 </table>
+}
