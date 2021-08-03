@@ -1,13 +1,11 @@
 ﻿using Database.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Auctioneer.ViewModels
@@ -58,19 +56,8 @@ namespace Auctioneer.ViewModels
 
 
         public async Task AuctionModelToVMAsync(Auction auction, UserManager<IdentityUser> _userManager)
-        { 
-            if(auction.Gallery.Count > 0)
-            {
-                Gallery = auction.Gallery;
-            }
-            else
-            {
-                //Gallery dummy = new();
-                //dummy.ImageName = "dummy.jpg";
-                //List<Gallery> dummyGallery = new();
-                //dummyGallery.Add(dummy);
-                //Gallery = dummyGallery;
-            }
+        {
+            Gallery = auction.Gallery;
             AuctionID = auction.AuctionID;
             Title = auction.Title;
             Description = auction.Description;

@@ -19,11 +19,12 @@ namespace Auctioneer.Controllers
         private readonly BalanceService _balanceService;
         private readonly IAuctionRepository _auctionRepository;
         private readonly IBidRepository _bidRepository;
+        private readonly DummyService _dummyService;
 
-
-        public BidsController(UserManager<IdentityUser> userManager, BalanceService balanceService, BidService bidService, IAuctionRepository auctionRepository, IBidRepository bidRepository)
+        public BidsController(UserManager<IdentityUser> userManager,DummyService dummyService, BalanceService balanceService, BidService bidService, IAuctionRepository auctionRepository, IBidRepository bidRepository)
         {
             _userManager = userManager;
+            _dummyService = dummyService;
             _balanceService = balanceService;
             _bidService = bidService;
             _auctionRepository = auctionRepository;
@@ -52,6 +53,14 @@ namespace Auctioneer.Controllers
                     {
                         AuctionViewModel auctionViewModel = new();
                         await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
+
+                        if (auctionViewModel.Gallery.Count == 0)
+                        {
+                            Gallery dummyImage = new();
+                            dummyImage.Image = _dummyService.GetDummy();
+                            auctionViewModel.Gallery.Add(dummyImage);
+                        }
+
                         var userLastBid = _bidService.GetUserLastBid(userID, auction.AuctionID);
                         if (userLastBid != null)
                         {
@@ -78,6 +87,12 @@ namespace Auctioneer.Controllers
 
             await model.AuctionModelToBidsVMAsync(auction, _userManager);
 
+            if (model.Gallery.Count == 0)
+            {
+                Gallery dummyImage = new();
+                dummyImage.Image = _dummyService.GetDummy();
+                model.Gallery.Add(dummyImage);
+            }
             var userID = _userManager.GetUserId(User);
             model.Balance = _balanceService.GetUserBalance(userID);
 

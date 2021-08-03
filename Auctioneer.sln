@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auctioneer", "Auctioneer.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "..\Database\Database.csproj", "{6B715FC7-75F1-445B-8314-66E8C6AB6AFA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuctionEndEmails", "..\AuctionEndEmails\AuctionEndEmails.csproj", "{7F085A07-CB38-4927-A499-52455F1131B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendEmailsOnAuctionEnd", "..\AuctionEndEmails\SendEmailsOnAuctionEnd.csproj", "{7F085A07-CB38-4927-A499-52455F1131B7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuctioneerAPI", "..\AuctioneerAPI\AuctioneerAPI.csproj", "{538D455A-A544-4846-8A09-FF7BE8AC29B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "..\Services\Services.csproj", "{5795F42C-8A0C-4573-B361-25BAE0BB4B67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "..\Services\Services.csproj", "{5795F42C-8A0C-4573-B361-25BAE0BB4B67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

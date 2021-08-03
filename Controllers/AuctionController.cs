@@ -1,18 +1,16 @@
 ﻿using Auctioneer.ViewModels;
+using Database.Models;
+using Database.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Database.Repository;
-using Database.Models;
-using Auctioneer;
-using Services;
-using System.IO;
 
 namespace Auctioneer.Controllers
 {
@@ -23,12 +21,13 @@ namespace Auctioneer.Controllers
         private readonly ICarTypeRepository _carTypeRepository;
         private readonly ICarFeaturesRepository _carFeaturesRepository;
         private readonly BidService _bidService;
+        private readonly DummyService _dummyService;
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly UserManager<IdentityUser> _userManager;
         log4net.ILog logger = log4net.LogManager.GetLogger(typeof(AuctionController));
 
 
-        public AuctionController(BidService bidService, IAuctionRepository auctionRepository, ICarTypeRepository carTypeRepository, ICarBrandRepository carBrandRepository, ICarFeaturesRepository carFeaturesRepository, IWebHostEnvironment hostEnvironment, UserManager<IdentityUser> userManager)
+        public AuctionController(DummyService dummyService, BidService bidService, IAuctionRepository auctionRepository, ICarTypeRepository carTypeRepository, ICarBrandRepository carBrandRepository, ICarFeaturesRepository carFeaturesRepository, IWebHostEnvironment hostEnvironment, UserManager<IdentityUser> userManager)
         {
             this._hostEnvironment = hostEnvironment;
             _userManager = userManager;
@@ -37,6 +36,7 @@ namespace Auctioneer.Controllers
             _carBrandRepository = carBrandRepository;
             _carFeaturesRepository = carFeaturesRepository;
             _bidService = bidService;
+            _dummyService = dummyService;
         }
 
         [AllowAnonymous]
@@ -109,24 +109,29 @@ namespace Auctioneer.Controllers
 
                 foreach (var auction in auctions)
                 {
-                    if (!auction.IsBlocked)
+
+                    AuctionViewModel auctionViewModel = new();
+                    await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
+
+                    if (auctionViewModel.Gallery.Count == 0)
                     {
-                        AuctionViewModel auctionViewModel = new();
-                        await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
-
-                        var userID = _userManager.GetUserId(User);
-                        var userLastBid = _bidService.GetUserLastBid(userID, auction.AuctionID);
-                        if (userLastBid != null)
-                        {
-                            auctionViewModel.UserLastBid = userLastBid.Amount;
-                        }
-                        else
-                        {
-                            auctionViewModel.UserLastBid = 0;
-                        }
-
-                        model.Auctions.Add(auctionViewModel);
+                        Gallery dummyImage = new();
+                        dummyImage.Image = _dummyService.GetDummy();
+                        auctionViewModel.Gallery.Add(dummyImage);
                     }
+
+                    var userID = _userManager.GetUserId(User);
+                    var userLastBid = _bidService.GetUserLastBid(userID, auction.AuctionID);
+                    if (userLastBid != null)
+                    {
+                        auctionViewModel.UserLastBid = userLastBid.Amount;
+                    }
+                    else
+                    {
+                        auctionViewModel.UserLastBid = 0;
+                    }
+
+                    model.Auctions.Add(auctionViewModel);
                 }
             }
             else
@@ -149,6 +154,14 @@ namespace Auctioneer.Controllers
             {
                 AuctionViewModel auctionViewModel = new();
                 await auctionViewModel.AuctionModelToVMAsync(userAuction, _userManager);
+
+                if (auctionViewModel.Gallery.Count == 0)
+                {
+                    Gallery dummyImage = new();
+                    dummyImage.Image = _dummyService.GetDummy();
+                    auctionViewModel.Gallery.Add(dummyImage);
+                }
+
                 var userLastBid = _bidService.GetUserLastBid(userID, userAuction.AuctionID);
                 if (userLastBid != null)
                 {
@@ -182,6 +195,14 @@ namespace Auctioneer.Controllers
                 {
                     AuctionViewModel auctionViewModel = new();
                     await auctionViewModel.AuctionModelToVMAsync(auction, _userManager);
+
+                    if (auctionViewModel.Gallery.Count == 0)
+                    {
+                        Gallery dummyImage = new();
+                        dummyImage.Image = _dummyService.GetDummy();
+                        auctionViewModel.Gallery.Add(dummyImage);
+                    }
+
                     //load user last bid
                     var userID = _userManager.GetUserId(User);
                     var userLastBid = _bidService.GetUserLastBid(userID, auction.AuctionID);
@@ -296,25 +317,13 @@ namespace Auctioneer.Controllers
             AuctionViewModel model = new();
             await model.AuctionModelToVMAsync(auction, _userManager);
 
-            //model.ImageFiles = new List<IFormFile>();
+            if (model.Gallery.Count == 0)
+            {
+                Gallery dummyImage = new();
+                dummyImage.Image = _dummyService.GetDummy();
+                model.Gallery.Add(dummyImage);
+            }
 
-            //foreach ( var byteImage in model.Gallery)
-            //{
-            //    using ( var stream = new MemoryStream(byteImage.Image))
-            //    {
-            //        var convertedImage = Image
-            //    }
-            //    MemoryStream ms = new MemoryStream(source);
-            //    Image ret = Image.FromStream(ms);
-            //    return ret;
-            //    using (var stream = new MemoryStream())
-            //    {
-            //        await image.CopyToAsync(stream);
-            //        Gallery convertedImage = new();
-            //        convertedImage.Image = stream.ToArray();
-            //        auction.Gallery.Add(convertedImage);
-            //    }
-            //}
             model.Features = new List<CarFeatures>();
 
             foreach (var auctionCarFeature in model.AuctionCarFeatures)

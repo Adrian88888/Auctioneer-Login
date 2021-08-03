@@ -52,6 +52,7 @@ namespace Auctioneer
             services.AddScoped<BidService>();
             services.AddScoped<BalanceService>();
             services.AddScoped<EmailSender>();
+            services.AddScoped<DummyService>();
             services.AddAuthorization(options => {
                 options.AddPolicy("readpolicy",
                     builder => builder.RequireRole("Admin", "Manager"));
