@@ -40,7 +40,7 @@ namespace Auctioneer.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> IndexAsync(string searchInput, string carBrand, string sort, string sortBy)
+        public async Task<IActionResult> IndexAsync(string searchInput, int? carBrandID, string sort, string sortBy)
         {
             logger.Info("Accessing the Index action of the Auction Controller");
             AuctionsViewModel model = new();
@@ -69,17 +69,17 @@ namespace Auctioneer.Controllers
             }
 
 
-            if (!String.IsNullOrEmpty(carBrand))
+            if (carBrandID != null)
             {
-                var brandID = _carBrandRepository.GetBrandID(carBrand);
-                auctions = auctions.Where(a => a.CarBrandID == brandID).ToList();
+                var carBrand = _carBrandRepository.GetAllCarBrands().Where(a => a.CarBrandID == carBrandID).FirstOrDefault().Brand;
+                auctions = auctions.Where(a => a.CarBrandID == carBrandID).ToList();
                 if (auctions.Count > 0)
                 {
-                    model.StatusMessage = "Showing the live auctions for the brand: '" + carBrand;
+                    model.StatusMessage = "Showing the live auctions for the brand " + carBrand + ".";
                 }
                 else
                 {
-                    model.StatusMessage = "There are no live auctions for the brand: " + carBrand + " at the moment.";
+                    model.StatusMessage = "There are no live auctions for the brand " + carBrand + " at the moment.";
                 }
 
             }

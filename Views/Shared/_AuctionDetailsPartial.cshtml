@@ -83,8 +83,8 @@
         <div class="alert alert-primary" role="alert">
             Winning bid: $@Convert.ToDecimal(Model.MaxBid).ToString("#,##0.00")
         </div>
-        <div class="alert alert-success" role="alert">
-            Highest Bid: $@Convert.ToDecimal(Model.CurrentBid).ToString("#,##0.00")
+        <div class="alert alert-success" role="alert" >
+            <p id="@Model.AuctionID">Highest Bid: $@Convert.ToDecimal(Model.CurrentBid).ToString("#,##0.00")</p> 
         </div>
 
         @if (Model.AuctionWinner == User.Identity.Name)
@@ -104,3 +104,5 @@
     </div>
 </div>
 <br />
+
+<script src="~/js/UpdateHighestBid.js"></script>

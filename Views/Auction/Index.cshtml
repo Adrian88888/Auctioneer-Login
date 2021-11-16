@@ -21,7 +21,7 @@
             <form class="form-inline my-2 my-lg-0" asp-controller="Auction" asp-action="Index">
 
                 Filter by brand:
-                <select class="form-control mr-sm-2" onchange="this.form.submit()" asp-for="carBrand">
+                <select class="form-control mr-sm-2" onchange="this.form.submit()" asp-for="carBrandID">
                     <option value="">Show all brands</option>
                     @foreach (var brand in Model.Brands)
                     {
@@ -68,3 +68,5 @@
         </div>
     }
 </div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/UpdateHighestBid.js"></script>

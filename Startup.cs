@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Auctioneer.Hubs;
 
 namespace Auctioneer
 {
@@ -39,11 +39,15 @@ namespace Auctioneer
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<Database.Data.ApplicationDbContext>();
             services.AddControllersWithViews();
+
+            services.AddSignalR();
+
             services.AddMvc(options =>
             {
                 // This pushes users to login if not authenticated
                 options.Filters.Add(new AuthorizeFilter());
             });
+
             services.AddScoped<Database.Repository.IAuctionRepository, Database.Repository.AuctionRepository>();
             services.AddScoped<Database.Repository.IBidRepository, Database.Repository.BidRepository>();
             services.AddScoped<Database.Repository.ICarBrandRepository, Database.Repository.CarBrandRepository>();
@@ -53,6 +57,7 @@ namespace Auctioneer
             services.AddScoped<BalanceService>();
             services.AddScoped<EmailSender>();
             services.AddScoped<DummyService>();
+
             services.AddAuthorization(options => {
                 options.AddPolicy("readpolicy",
                     builder => builder.RequireRole("Admin", "Manager"));
@@ -85,11 +90,15 @@ namespace Auctioneer
             app.UseAuthentication();
             app.UseAuthorization();
 
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Auction}/{action=Index}/{id?}");
+
+                endpoints.MapHub<RealtimeDataHub>("/realtimeDataHub");
+
                 endpoints.MapRazorPages();
             });
         }

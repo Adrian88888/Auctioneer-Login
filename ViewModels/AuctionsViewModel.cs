@@ -17,6 +17,7 @@ namespace Auctioneer.ViewModels
     {
         public List<AuctionViewModel> Auctions { get; set; }
         public List<CarBrand> Brands { get; set; }
+        public int carBrandID { get; set; }
         public string carBrand { get; set; }
         public string StatusMessage { get; set; }
         public string sort { get; set; }

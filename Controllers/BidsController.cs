@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Database.Repository;
 using System;
+using Auctioneer.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Auctioneer.Controllers
 {
@@ -20,8 +22,9 @@ namespace Auctioneer.Controllers
         private readonly IAuctionRepository _auctionRepository;
         private readonly IBidRepository _bidRepository;
         private readonly DummyService _dummyService;
+        private readonly IHubContext<RealtimeDataHub> _hubContext;
 
-        public BidsController(UserManager<IdentityUser> userManager,DummyService dummyService, BalanceService balanceService, BidService bidService, IAuctionRepository auctionRepository, IBidRepository bidRepository)
+        public BidsController(IHubContext<RealtimeDataHub> hubContext, UserManager<IdentityUser> userManager,DummyService dummyService, BalanceService balanceService, BidService bidService, IAuctionRepository auctionRepository, IBidRepository bidRepository)
         {
             _userManager = userManager;
             _dummyService = dummyService;
@@ -29,6 +32,7 @@ namespace Auctioneer.Controllers
             _bidService = bidService;
             _auctionRepository = auctionRepository;
             _bidRepository = bidRepository;
+            _hubContext = hubContext;
         }
 
 
@@ -112,7 +116,7 @@ namespace Auctioneer.Controllers
 
 
         [HttpPost]
-        public IActionResult Create(BidViewModel model, int? id)
+        public async Task<IActionResult> CreateAsync(BidViewModel model, int? id)
         {
             if (ModelState.IsValid)
             {
@@ -126,12 +130,17 @@ namespace Auctioneer.Controllers
                     {
                         userLastBid.Amount = model.Amount;
                         auction.CurrentBid = model.Amount;
+
+                        await _hubContext.Clients.All.SendAsync("ReceiveHighestBid", model.Amount, auction.AuctionID);
                         auction.AuctionWinnerID = userID;
                     }
                     else
                     {
                         Bids bid = new();
                         auction.CurrentBid = model.Amount;
+
+                        await _hubContext.Clients.All.SendAsync("ReceiveHighestBid", model.Amount, auction.AuctionID);
+
                         auction.AuctionWinnerID = userID;
                         bid.Amount = model.Amount;
                         bid.UserID = userID;
@@ -151,12 +160,15 @@ namespace Auctioneer.Controllers
                     {
                         userLastBid.Amount = model.Amount;
                         auction.CurrentBid = model.Amount;
+                        await _hubContext.Clients.All.SendAsync("ReceiveHighestBid", model.Amount, auction.AuctionID);
                         auction.AuctionWinnerID = userID;
                     }
                     else
                     {
                         Bids bid = new();
                         auction.CurrentBid = model.Amount;
+                        await _hubContext.Clients.All.SendAsync("ReceiveHighestBid", model.Amount, auction.AuctionID);
+
                         auction.AuctionWinnerID = userID;
                         bid.Amount = model.Amount;
                         bid.UserID = userID;
